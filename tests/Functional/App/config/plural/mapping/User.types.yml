@@ -2,5 +2,5 @@ User:
   type: object
   config:
     fields:
-      usernae: String
+      username: String
       url: String
