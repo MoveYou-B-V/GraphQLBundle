@@ -23,11 +23,19 @@ use Overblog\GraphQLBundle\Extension\Access\AccessExtension;
 use Overblog\GraphQLBundle\Extension\Builder\BuilderExtension;
 use Overblog\GraphQLBundle\Extension\IsPublic\IsPublicExtension;
 use Overblog\GraphQLBundle\Extension\Validation\ValidationExtension;
+use Overblog\GraphQLBundle\Extension\Validation\ValidationGroupsExtension;
 use Symfony\Component\Config\Definition\Processor;
 
 abstract class ConfigurationParser extends ConfigurationFilesParser
 {
     protected Configuration $configuration;
+
+    public const EXTENSIONS = [
+        'access' => AccessExtension::class,
+        'public' => IsPublicExtension::class,
+        'validation' => ValidationExtension::class,
+        'validationGroups' => ValidationGroupsExtension::class,
+    ];
 
     public function __construct(array $directories = [])
     {
@@ -83,9 +91,11 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                 // no break
             case TypesConfiguration::TYPE_OBJECT:
                 $typeConfiguration = $typeConfiguration ?? new ObjectConfiguration($name);
+
                 if (TypesConfiguration::TYPE_OBJECT === $configType && count($config['interfaces']) > 0) {
                     $typeConfiguration->setInterfaces($config['interfaces']);
                 }
+
                 if (isset($config['resolveField'])) {
                     $typeConfiguration->setResolveField($config['resolveField']);
                 }
@@ -98,6 +108,7 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                         ]));
                     }
                 }
+
                 foreach ($config['fields'] as $fieldName => $fieldConfig) {
                     $fieldConfiguration = new FieldConfiguration($fieldName, $fieldConfig['type'] ?? null);
                     $this->setCommonProperties($fieldConfiguration, $fieldConfig);
@@ -111,6 +122,13 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                         foreach ($fieldConfig['args'] as $argName => $argConfig) {
                             $argumentConfiguration = new ArgumentConfiguration($argName, $argConfig['type']);
                             $this->setCommonProperties($argumentConfiguration, $argConfig);
+                            if (isset($argConfig['validation'])) {
+                                $argumentConfiguration->addExtension(new ExtensionConfiguration(ValidationExtension::ALIAS, $argConfig['validation']));
+                            }
+                            if (array_key_exists('defaultValue', $argConfig)) {
+                                $argumentConfiguration->setDefaultValue($argConfig['defaultValue']);
+                            }
+                            $this->handleDefaultExtensions($argumentConfiguration, $argConfig);
                             $fieldConfiguration->addArgument($argumentConfiguration);
                         }
                     }
@@ -128,16 +146,7 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                             'configuration' => $configuration,
                         ]));
                     }
-                    if (isset($fieldConfig['access'])) {
-                        $fieldConfiguration->addExtension(new ExtensionConfiguration(AccessExtension::ALIAS, $fieldConfig['access']));
-                    }
-                    if (isset($fieldConfig['public'])) {
-                        $fieldConfiguration->addExtension(new ExtensionConfiguration(IsPublicExtension::ALIAS, $fieldConfig['public']));
-                    }
-                    if (isset($fieldConfig['validation'])) {
-                        $fieldConfiguration->addExtension(new ExtensionConfiguration(ValidationExtension::ALIAS, $fieldConfig['validation']));
-                    }
-
+                    $this->handleDefaultExtensions($fieldConfiguration, $fieldConfig);
                     $typeConfiguration->addField($fieldConfiguration);
                 }
                 break;
@@ -146,9 +155,10 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                 foreach ($config['fields'] as $fieldName => $fieldConfig) {
                     $fieldConfiguration = new InputFieldConfiguration($fieldName, $fieldConfig['type']);
                     $this->setCommonProperties($fieldConfiguration, $fieldConfig);
-                    if (isset($fieldConfig['defaultValue'])) {
+                    if (array_key_exists('defaultValue', $fieldConfig)) {
                         $fieldConfiguration->setDefaultValue($fieldConfig['defaultValue']);
                     }
+                    $this->handleDefaultExtensions($fieldConfiguration, $fieldConfig);
                     $typeConfiguration->addField($fieldConfiguration);
                 }
                 break;
@@ -184,6 +194,7 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                 return null;
         }
 
+        $this->handleDefaultExtensions($typeConfiguration, $config);
         $this->setCommonProperties($typeConfiguration, $config);
 
         return $typeConfiguration;
@@ -191,7 +202,7 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
 
     protected function setCommonProperties(TypeConfiguration $typeConfiguration, array $config): void
     {
-        if (isset($config['name'])) {
+        if ($typeConfiguration instanceof RootTypeConfiguration && isset($config['name'])) {
             $typeConfiguration->setPublicName($config['name']);
         }
 
@@ -205,6 +216,18 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
 
         foreach ($config['extensions'] as $extension) {
             $typeConfiguration->addExtension(new ExtensionConfiguration($extension['name'], $extension['configuration']));
+        }
+    }
+
+    protected function handleDefaultExtensions(TypeConfiguration $typeConfiguration, array $config): void
+    {
+        foreach (self::EXTENSIONS as $extensionKey => $extensionClass) {
+            $alias = constant(sprintf('%s::ALIAS', $extensionClass));
+            $supports = constant(sprintf('%s::SUPPORTS', $extensionClass));
+
+            if (isset($config[$extensionKey]) && in_array($typeConfiguration->getGraphQLType(), $supports)) {
+                $typeConfiguration->addExtension(new ExtensionConfiguration($alias, $config[$extensionKey]));
+            }
         }
     }
 }

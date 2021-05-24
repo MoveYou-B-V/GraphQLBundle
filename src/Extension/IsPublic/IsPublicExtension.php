@@ -13,12 +13,13 @@ use Overblog\GraphQLBundle\Extension\Extension;
 class IsPublicExtension extends Extension
 {
     public const ALIAS = 'public';
+    public const SUPPORTS = [TypeConfiguration::TYPE_FIELD];
 
     /**
      * {@inheritdoc}
      */
     public function supports(): array
     {
-        return [TypeConfiguration::TYPE_FIELD];
+        return self::SUPPORTS;
     }
 }

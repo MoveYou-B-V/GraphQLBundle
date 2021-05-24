@@ -13,12 +13,15 @@ use Overblog\GraphQLBundle\Extension\Extension;
 class AccessExtension extends Extension
 {
     public const ALIAS = 'access';
+    public const SUPPORTS = [
+        TypeConfiguration::TYPE_FIELD,
+    ];
 
     /**
      * {@inheritdoc}
      */
     public function supports(): array
     {
-        return [TypeConfiguration::TYPE_FIELD];
+        return self::SUPPORTS;
     }
 }

@@ -42,6 +42,7 @@ use Overblog\GraphQLBundle\ExpressionLanguage\ExpressionLanguage as EL;
 use Overblog\GraphQLBundle\Extension\Access\AccessExtension;
 use Overblog\GraphQLBundle\Extension\IsPublic\IsPublicExtension;
 use Overblog\GraphQLBundle\Extension\Validation\ValidationExtension;
+use Overblog\GraphQLBundle\Extension\Validation\ValidationGroupsExtension;
 use Overblog\GraphQLBundle\Generator\Converter\ExpressionConverter;
 use Overblog\GraphQLBundle\Generator\Exception\GeneratorException;
 use Overblog\GraphQLBundle\Validator\InputValidator;
@@ -717,7 +718,12 @@ class TypeBuilder
         // only for object/interface fields types
         if ($fieldConfig instanceof FieldConfiguration) {
             if (null !== $fieldConfig->getResolve()) {
-                $field->addItem('resolve', $this->buildResolve($fieldConfig->getResolve(), null)); // $fieldConfig['validationGroups'] ?? null)); XXX VALIDATION
+                $groups = null;
+                if ($fieldConfig->hasExtension(ValidationGroupsExtension::ALIAS)) {
+                    $groups = $fieldConfig->getExtension(ValidationGroupsExtension::ALIAS)->getConfiguration();
+                }
+
+                $field->addItem('resolve', $this->buildResolve($fieldConfig->getResolve(), $groups));
             }
 
             if ($fieldConfig->hasDeprecationReason()) {
@@ -788,7 +794,7 @@ class TypeBuilder
         }
 
         if ($argConfig->hasDefaultValue()) {
-            $arg->addIfNotEmpty('defaultValue', $argConfig->getDefaultValue());
+            $arg->addItem('defaultValue', $argConfig->getDefaultValue());
         }
 
         if ($argConfig->hasExtension(ValidationExtension::ALIAS)) {

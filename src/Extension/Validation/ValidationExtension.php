@@ -14,6 +14,13 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 class ValidationExtension extends Extension
 {
     public const ALIAS = 'validation';
+    public const SUPPORTS = [
+        TypeConfiguration::TYPE_OBJECT,
+        TypeConfiguration::TYPE_FIELD,
+        TypeConfiguration::TYPE_ARGUMENT,
+        TypeConfiguration::TYPE_INPUT,
+        TypeConfiguration::TYPE_INPUT_FIELD,
+    ];
 
     /**
      * Provide a TreeBuilder to process configuration based on type.
@@ -28,12 +35,6 @@ class ValidationExtension extends Extension
      */
     public function supports(): array
     {
-        return [
-            TypeConfiguration::TYPE_OBJECT,
-            TypeConfiguration::TYPE_FIELD,
-            TypeConfiguration::TYPE_ARGUMENT,
-            TypeConfiguration::TYPE_INPUT,
-            TypeConfiguration::TYPE_INPUT_FIELD,
-        ];
+        return self::SUPPORTS;
     }
 }

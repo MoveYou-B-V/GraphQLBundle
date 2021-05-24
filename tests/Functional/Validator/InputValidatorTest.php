@@ -184,7 +184,6 @@ class InputValidatorTest extends TestCase
         ';
 
         $result = $this->executeGraphQLRequest($query);
-
         $this->assertTrue(empty($result['errors']));
         $this->assertTrue($result['data']['cascadeValidationWithGroups']);
     }

@@ -6,21 +6,24 @@ namespace Overblog\GraphQLBundle\Configuration\Traits;
 
 trait DefaultValueTrait
 {
-    protected $defaultValue = null;
+    protected $defaultValue;
+
+    protected bool $isDefaultValueSet = false;
 
     public function getDefaultValue()
     {
         return $this->defaultValue;
     }
 
-    public function hasDefaultValue()
+    public function hasDefaultValue(): bool
     {
-        return null !== $this->defaultValue;
+        return $this->isDefaultValueSet;
     }
 
     public function setDefaultValue($defaultValue): self
     {
         $this->defaultValue = $defaultValue;
+        $this->isDefaultValueSet = true;
 
         return $this;
     }
