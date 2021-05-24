@@ -14,13 +14,13 @@ class ArgumentConfiguration extends TypeConfiguration
 
     protected FieldConfiguration $parent;
 
-    public function __construct(string $name, string $type)
+    public function __construct(string $name, string $type = null)
     {
         $this->name = $name;
         $this->type = $type;
     }
 
-    public static function get(string $name, string $type): ArgumentConfiguration
+    public static function get(string $name, string $type = null): ArgumentConfiguration
     {
         return new static($name, $type);
     }

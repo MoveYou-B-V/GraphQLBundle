@@ -132,7 +132,7 @@ class TypeBuilder
             ->setFinal()
             ->setExtends(static::EXTENDS[$config->getGraphQLType()])
             ->addImplements(GeneratedTypeInterface::class)
-            ->addConst('NAME', $config->getName())
+            ->addConst('NAME', $config->getPublicName() ?? $config->getName())
             ->setDocBlock(static::DOCBLOCK_TEXT);
 
         $class->emptyLine();

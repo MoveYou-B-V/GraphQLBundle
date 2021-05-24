@@ -24,14 +24,14 @@ class FieldConfiguration extends TypeConfiguration
     protected $resolve = null;
     protected ?string $complexity = null;
 
-    public function __construct(string $name, string $type, $resolve = null)
+    public function __construct(string $name, string $type = null, string $resolve = null)
     {
         $this->name = $name;
         $this->type = $type;
         $this->resolve = $resolve;
     }
 
-    public static function get(string $name, string $type, string $resolve = null): FieldConfiguration
+    public static function get(string $name, string $type = null, string $resolve = null): FieldConfiguration
     {
         return new static($name, $type, $resolve);
     }

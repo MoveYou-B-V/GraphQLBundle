@@ -14,14 +14,14 @@ class InputFieldConfiguration extends TypeConfiguration
 
     protected InputConfiguration $parent;
 
-    public function __construct(string $name, string $type, $defaultValue = null)
+    public function __construct(string $name, string $type = null, $defaultValue = null)
     {
         $this->name = $name;
         $this->type = $type;
         $this->defaultValue = $defaultValue;
     }
 
-    public static function get(string $name, string $type, $defaultValue = null): InputFieldConfiguration
+    public static function get(string $name, string $type = null, $defaultValue = null): InputFieldConfiguration
     {
         return new static($name, $type, $defaultValue);
     }

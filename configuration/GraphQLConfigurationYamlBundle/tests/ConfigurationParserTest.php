@@ -71,7 +71,6 @@ class ConfigurationParserTest extends WebTestCase
             'fields' => [
                 [
                     'name' => 'node',
-                    'type' => '--replaced-by-builder--',
                     'extensions' => [
                         [
                             'alias' => 'builder',

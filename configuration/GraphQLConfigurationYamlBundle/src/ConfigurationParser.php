@@ -99,7 +99,7 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                     }
                 }
                 foreach ($config['fields'] as $fieldName => $fieldConfig) {
-                    $fieldConfiguration = new FieldConfiguration($fieldName, $fieldConfig['type'] ?? '--replaced-by-builder--');
+                    $fieldConfiguration = new FieldConfiguration($fieldName, $fieldConfig['type'] ?? null);
                     $this->setCommonProperties($fieldConfiguration, $fieldConfig);
                     if (isset($fieldConfig['resolve'])) {
                         $fieldConfiguration->setResolve($fieldConfig['resolve']);
@@ -191,6 +191,10 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
 
     protected function setCommonProperties(TypeConfiguration $typeConfiguration, array $config): void
     {
+        if (isset($config['name'])) {
+            $typeConfiguration->setPublicName($config['name']);
+        }
+
         if (isset($config['description'])) {
             $typeConfiguration->setDescription($config['description']);
         }

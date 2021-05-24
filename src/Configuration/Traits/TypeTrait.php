@@ -11,9 +11,9 @@ trait TypeTrait
     /**
      * @Assert\NotBlank
      */
-    protected string $type;
+    protected ?string $type;
 
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
