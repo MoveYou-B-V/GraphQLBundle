@@ -1,0 +1,8 @@
+parameters:
+
+services:
+    Overblog\GraphQL\Bundle\ConfigurationSdlBundle\ConfigurationSdlParser:
+        arguments:
+            - "%graphql.configuration.directories.sdl%"
+        tags:
+            - { name: "overblog_graphql.configuration.provider" }

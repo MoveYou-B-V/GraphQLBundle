@@ -4,14 +4,14 @@ imports:
 
 overblog_graphql:
     security:
-        query_max_complexity: '10'
+        query_max_complexity: "10"
     definitions:
         class_namespace: "Overblog\\GraphQLBundle\\QueryComplexity\\__DEFINITIONS__"
         schema:
             query: Query
             mutation: ~
-        mappings:
-            types:
-                -
-                    type: yaml
-                    dir: "%kernel.project_dir%/config/queryComplexity/mapping"
+
+overblog_graphql_configuration_yaml:
+    mapping:
+        directories:
+            - "%kernel.project_dir%/config/queryComplexity/mapping"

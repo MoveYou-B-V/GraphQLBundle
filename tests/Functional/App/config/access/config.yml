@@ -10,15 +10,12 @@ overblog_graphql:
         schema:
             query: RootQuery
             mutation: RootMutation
-        mappings:
-            types:
-                -
-                    type: yaml
-                    dir: "%kernel.project_dir%/config/access/mapping"
-                # include the same files twice
-                -
-                    type: yaml
-                    dir: "%kernel.project_dir%/config/access/mapping"
+
+overblog_graphql_configuration_yaml:
+    mapping:
+        directories:
+            - "%kernel.project_dir%/config/access/mapping"
+            - "%kernel.project_dir%/config/access/mapping"
 
 services:
     overblog_graphql.test.private:

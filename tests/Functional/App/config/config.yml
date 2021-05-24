@@ -14,10 +14,10 @@ security:
                 users:
                     ryan:
                         password: 123
-                        roles: 'ROLE_USER'
+                        roles: "ROLE_USER"
                     admin:
                         password: 123
-                        roles: 'ROLE_ADMIN'
+                        roles: "ROLE_ADMIN"
     encoders:
         Symfony\Component\Security\Core\User\User: plaintext
     firewalls:
@@ -31,10 +31,8 @@ overblog_graphql:
     errors_handler:
         debug: false
     definitions:
-        use_experimental_executor: '%env(bool:USE_EXPERIMENTAL_EXECUTOR)%'
+        use_experimental_executor: "%env(bool:USE_EXPERIMENTAL_EXECUTOR)%"
         config_validation: true
-        mappings:
-            auto_discover: false
     security:
         query_max_depth: false
         query_max_complexity: false

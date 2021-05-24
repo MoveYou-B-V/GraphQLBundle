@@ -8,7 +8,6 @@ use GraphQL\Executor\Promise\Adapter\SyncPromiseAdapter;
 use GraphQL\Validator\Rules\QueryComplexity;
 use GraphQL\Validator\Rules\QueryDepth;
 use Overblog\GraphQLBundle\Definition\Argument;
-use Overblog\GraphQLBundle\DependencyInjection\Compiler\ConfigParserPass;
 use Overblog\GraphQLBundle\Error\ErrorHandler;
 use Overblog\GraphQLBundle\EventListener\ErrorLoggerListener;
 use Overblog\GraphQLBundle\Executor\Executor;
@@ -20,7 +19,6 @@ use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use function array_keys;
 use function is_array;
 use function is_int;
 use function is_numeric;
@@ -55,7 +53,6 @@ class Configuration implements ConfigurationInterface
                 ->append($this->errorsHandlerSection())
                 ->append($this->servicesSection())
                 ->append($this->securitySection())
-                ->append($this->doctrineSection())
                 ->append($this->profilerSection())
             ->end();
 
@@ -136,7 +133,6 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('show_debug_info')->info('Show some performance stats in extensions')->defaultFalse()->end()
                 ->booleanNode('config_validation')->defaultValue($this->debug)->end()
                 ->append($this->definitionsSchemaSection())
-                ->append($this->definitionsMappingsSection())
                 ->arrayNode('builders')
                     ->children()
                         ->append($this->builderSection('field'))
@@ -241,79 +237,6 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ->end();
-
-        return $node;
-    }
-
-    private function definitionsMappingsSection(): ArrayNodeDefinition
-    {
-        $builder = new TreeBuilder('mappings');
-
-        /** @var ArrayNodeDefinition $node */
-        $node = $builder->getRootNode();
-
-        // @phpstan-ignore-next-line
-        $node
-            ->children()
-                ->arrayNode('auto_discover')
-                    ->treatFalseLike(['bundles' => false, 'root_dir' => false, 'built_in' => true])
-                    ->treatTrueLike(['bundles' => true, 'root_dir' => true, 'built_in' => true])
-                    ->treatNullLike(['bundles' => true, 'root_dir' => true, 'built_in' => true])
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->booleanNode('bundles')->defaultFalse()->end()
-                        ->booleanNode('root_dir')->defaultFalse()->end()
-                        ->booleanNode('built_in')->defaultTrue()->end()
-                    ->end()
-                ->end()
-                ->arrayNode('types')
-                    ->prototype('array')
-                        ->addDefaultsIfNotSet()
-                        ->beforeNormalization()
-                            ->ifTrue(fn ($v) => isset($v['type']) && is_string($v['type']))
-                            ->then(function ($v) {
-                                if ('yml' === $v['type']) {
-                                    $v['types'] = ['yaml'];
-                                } else {
-                                    $v['types'] = [$v['type']];
-                                }
-                                unset($v['type']);
-
-                                return $v;
-                            })
-                        ->end()
-                        ->children()
-                            ->arrayNode('types')
-                                ->prototype('enum')->values(array_keys(ConfigParserPass::SUPPORTED_TYPES_EXTENSIONS))->isRequired()->end()
-                            ->end()
-                            ->scalarNode('dir')->defaultNull()->end()
-                            ->scalarNode('suffix')->defaultValue(ConfigParserPass::DEFAULT_TYPES_SUFFIX)->end()
-                        ->end()
-                    ->end()
-                ->end()
-            ->end()
-        ;
-
-        return $node;
-    }
-
-    private function doctrineSection(): ArrayNodeDefinition
-    {
-        $builder = new TreeBuilder('doctrine');
-
-        /** @var ArrayNodeDefinition $node */
-        $node = $builder->getRootNode();
-
-        // @phpstan-ignore-next-line
-        $node
-            ->addDefaultsIfNotSet()
-            ->children()
-                ->arrayNode('types_mapping')
-                    ->defaultValue([])
-                    ->prototype('scalar')->end()
-                ->end()
-            ->end()
-        ;
 
         return $node;
     }

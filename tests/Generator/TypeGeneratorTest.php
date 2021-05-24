@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Overblog\GraphQLBundle\Tests\Generator;
 
 use Generator;
+use Overblog\GraphQLBundle\Configuration\Configuration;
 use Overblog\GraphQLBundle\Event\SchemaCompiledEvent;
 use Overblog\GraphQLBundle\Generator\TypeBuilder;
 use Overblog\GraphQLBundle\Generator\TypeGenerator;
@@ -24,7 +25,7 @@ class TypeGeneratorTest extends TestCase
 
         $options = new TypeGeneratorOptions('App', $cacheDir, true, null, $cacheDirMask);
 
-        $mask = (new TypeGenerator([], $typeBuilder, $eventDispatcher, $options))->getCacheDirMask();
+        $mask = (new TypeGenerator(new Configuration(), $typeBuilder, $eventDispatcher, $options))->getCacheDirMask();
 
         $this->assertSame($expectedMask, $mask);
     }
@@ -40,7 +41,7 @@ class TypeGeneratorTest extends TestCase
 
         $options = new TypeGeneratorOptions('App', null);
 
-        (new TypeGenerator([], $typeBuilder, $eventDispatcher, $options))->compile(TypeGenerator::MODE_DRY_RUN);
+        (new TypeGenerator(new Configuration(), $typeBuilder, $eventDispatcher, $options))->compile(TypeGenerator::MODE_DRY_RUN);
     }
 
     public function getPermissionsProvider(): Generator

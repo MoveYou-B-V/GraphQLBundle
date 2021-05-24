@@ -16,9 +16,9 @@ overblog_graphql:
             query: Query
             mutation: ~
             types: [User, Photo]
-        mappings:
-            auto_discover: true
-            types:
-                -
-                    dir: "%kernel.project_dir%/config/node/mapping"
-                    suffix: _type
+
+overblog_graphql_configuration_yaml:
+    mapping:
+        auto_discover: true
+        directories:
+            - "%kernel.project_dir%/config/node/mapping"

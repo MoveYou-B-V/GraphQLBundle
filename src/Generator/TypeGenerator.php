@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Overblog\GraphQLBundle\Generator;
 
 use Composer\Autoload\ClassLoader;
-use Overblog\GraphQLBundle\Config\Processor;
+use Overblog\GraphQLBundle\Configuration\Configuration;
+use Overblog\GraphQLBundle\Configuration\RootTypeConfiguration;
 use Overblog\GraphQLBundle\Event\SchemaCompiledEvent;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -27,18 +28,18 @@ class TypeGenerator
     public const GRAPHQL_SERVICES = 'services';
 
     private static bool $classMapLoaded = false;
-    private array $typeConfigs;
+    private Configuration $configuration;
     private TypeGeneratorOptions $options;
     private TypeBuilder $typeBuilder;
     private EventDispatcherInterface $dispatcher;
 
     public function __construct(
-        array $typeConfigs,
+        Configuration $configuration,
         TypeBuilder $typeBuilder,
         EventDispatcherInterface $dispatcher,
         TypeGeneratorOptions $options
     ) {
-        $this->typeConfigs = $typeConfigs;
+        $this->configuration = $configuration;
         $this->typeBuilder = $typeBuilder;
         $this->dispatcher = $dispatcher;
         $this->options = $options;
@@ -57,10 +58,9 @@ class TypeGenerator
 
         // Generate classes
         $classes = [];
-        foreach (Processor::process($this->typeConfigs) as $name => $config) {
-            $config['config']['name'] ??= $name;
-            $config['config']['class_name'] = $config['class_name'];
-            $classMap = $this->generateClass($config, $cacheDir, $mode);
+        $classes = [];
+        foreach ($this->configuration->getTypes() as $typeConfiguration) {
+            $classMap = $this->generateClass($typeConfiguration, $cacheDir, $mode);
             $classes = array_merge($classes, $classMap);
         }
 
@@ -82,13 +82,13 @@ class TypeGenerator
         return $classes;
     }
 
-    public function generateClass(array $config, ?string $outputDirectory, int $mode = self::MODE_WRITE): array
+    public function generateClass(RootTypeConfiguration $typeConfiguration, ?string $outputDirectory, int $mode = self::MODE_WRITE): array
     {
-        $className = $config['config']['class_name'];
+        $className = $typeConfiguration->getClassName();
         $path = "$outputDirectory/$className.php";
 
         if (!($mode & self::MODE_MAPPING_ONLY)) {
-            $phpFile = $this->typeBuilder->build($config['config'], $config['type']);
+            $phpFile = $this->typeBuilder->build($typeConfiguration);
 
             if ($mode & self::MODE_WRITE) {
                 if (($mode & self::MODE_OVERRIDE) || !file_exists($path)) {

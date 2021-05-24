@@ -62,7 +62,7 @@ services:
 
     Overblog\GraphQLBundle\Generator\TypeGenerator:
         arguments:
-            - '%overblog_graphql_types.config%'
+            - '@Overblog\GraphQLBundle\Configuration\Configuration'
             - '@Overblog\GraphQLBundle\Generator\TypeBuilder'
             - '@Symfony\Contracts\EventDispatcher\EventDispatcherInterface'
             - !service

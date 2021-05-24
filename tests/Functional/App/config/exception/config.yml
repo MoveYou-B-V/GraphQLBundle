@@ -6,14 +6,14 @@ overblog_graphql:
     errors_handler:
         exceptions:
             errors:
-              - 'InvalidArgumentException'
+                - "InvalidArgumentException"
     definitions:
         class_namespace: 'Overblog\GraphQLBundle\Exception\__DEFINITIONS__'
         schema:
             query: Query
             mutation: ~
-        mappings:
-            types:
-                -
-                    type: yaml
-                    dir: '%kernel.project_dir%/config/exception/mapping'
+
+overblog_graphql_configuration_yaml:
+    mapping:
+        directories:
+            - "%kernel.project_dir%/config/exception/mapping"

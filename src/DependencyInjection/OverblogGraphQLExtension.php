@@ -9,7 +9,6 @@ use GraphQL\Error\UserError;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Schema;
 use Overblog\GraphQLBundle\CacheWarmer\CompileCacheWarmer;
-use Overblog\GraphQLBundle\Config\Processor\BuilderProcessor;
 use Overblog\GraphQLBundle\Definition\Builder\SchemaBuilder;
 use Overblog\GraphQLBundle\Definition\Resolver\MutationInterface;
 use Overblog\GraphQLBundle\Definition\Resolver\QueryInterface;
@@ -22,6 +21,15 @@ use Overblog\GraphQLBundle\EventListener\ClassLoaderListener;
 use Overblog\GraphQLBundle\EventListener\DebugListener;
 use Overblog\GraphQLBundle\EventListener\ErrorHandlerListener;
 use Overblog\GraphQLBundle\EventListener\ErrorLoggerListener;
+use Overblog\GraphQLBundle\Extension\Builder\LegacyBuilder;
+use Overblog\GraphQLBundle\Extension\Extension as GraphQLExtension;
+use Overblog\GraphQLBundle\Relay\Connection\BackwardConnectionArgsDefinition;
+use Overblog\GraphQLBundle\Relay\Connection\ConnectionArgsDefinition;
+use Overblog\GraphQLBundle\Relay\Connection\ForwardConnectionArgsDefinition;
+use Overblog\GraphQLBundle\Relay\Mutation\MutationFieldDefinition;
+use Overblog\GraphQLBundle\Relay\Node\GlobalIdFieldDefinition;
+use Overblog\GraphQLBundle\Relay\Node\NodeFieldDefinition;
+use Overblog\GraphQLBundle\Relay\Node\PluralIdentifyingRootFieldDefinition;
 use Overblog\GraphQLBundle\Request\Executor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -48,7 +56,7 @@ class OverblogGraphQLExtension extends Extension
         $this->setSchemaArguments($config, $container);
         $this->setErrorHandler($config, $container);
         $this->setSecurity($config, $container);
-        $this->setConfigBuilders($config, $container);
+        $this->setConfigLegacyBuilders($config, $container);
         $this->setDebugListener($config, $container);
         $this->setDefinitionParameters($config, $container);
         $this->setProfilerParameters($config, $container);
@@ -58,6 +66,7 @@ class OverblogGraphQLExtension extends Extension
         $this->setDefaultFieldResolver($config, $container);
 
         $container->setParameter($this->getAlias().'.config', $config);
+        $container->setParameter($this->getAlias().'.schemas', $config['definitions']['schema']);
         $container->setParameter($this->getAlias().'.resources_dir', realpath(__DIR__.'/../Resources'));
     }
 
@@ -78,6 +87,7 @@ class OverblogGraphQLExtension extends Extension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yaml');
+        $loader->load('configuration.yaml');
         $loader->load('commands.yaml');
         $loader->load('listeners.yaml');
         $loader->load('graphql_types.yaml');
@@ -86,6 +96,7 @@ class OverblogGraphQLExtension extends Extension
         $loader->load('definition_config_processors.yaml');
         $loader->load('aliases.yaml');
         $loader->load('profiler.yaml');
+        $loader->load('extensions.yaml');
     }
 
     private function registerForAutoconfiguration(ContainerBuilder $container): void
@@ -98,6 +109,9 @@ class OverblogGraphQLExtension extends Extension
 
         $container->registerForAutoconfiguration(Type::class)
             ->addTag('overblog_graphql.type');
+
+        $container->registerForAutoconfiguration(GraphQLExtension::class)
+            ->addTag('overblog_graphqL.extension');
     }
 
     private function setDefaultFieldResolver(array $config, ContainerBuilder $container): void
@@ -157,18 +171,6 @@ class OverblogGraphQLExtension extends Extension
             $definition = $container->register(DebugListener::class);
             $definition->addTag('kernel.event_listener', ['event' => Events::PRE_EXECUTOR, 'method' => 'onPreExecutor']);
             $definition->addTag('kernel.event_listener', ['event' => Events::POST_EXECUTOR, 'method' => 'onPostExecutor']);
-        }
-    }
-
-    private function setConfigBuilders(array $config, ContainerBuilder $container): void
-    {
-        foreach (BuilderProcessor::BUILDER_TYPES as $type) {
-            if (!empty($config['definitions']['builders'][$type])) {
-                foreach ($config['definitions']['builders'][$type] as $params) {
-                    $container->addObjectResource($params['class']);
-                    BuilderProcessor::addBuilderClass($params['alias'], $type, $params['class']);
-                }
-            }
         }
     }
 
@@ -258,6 +260,46 @@ class OverblogGraphQLExtension extends Extension
         }
 
         $container->setParameter(sprintf('%s.resolver_maps', $this->getAlias()), $resolverMapsBySchema);
+    }
+
+    private function setConfigLegacyBuilders(array $config, ContainerBuilder $container): void
+    {
+        ## LEGACY BUILDERS
+        $relayBuilders = [
+            'args' => [
+                ['alias' => 'Relay::ForwardConnection', 'class' => ForwardConnectionArgsDefinition::class],
+                ['alias' => 'Relay::BackwardConnection', 'class' => BackwardConnectionArgsDefinition::class],
+                ['alias' => 'Relay::Connection', 'class' => ConnectionArgsDefinition::class],
+            ],
+            'field' => [
+                ['alias' => 'Relay::Mutation', 'class' => MutationFieldDefinition::class],
+                ['alias' => 'Relay::GlobalId', 'class' => GlobalIdFieldDefinition::class],
+                ['alias' => 'Relay::Node', 'class' => NodeFieldDefinition::class],
+                ['alias' => 'Relay::PluralIdentifyingRoot', 'class' => PluralIdentifyingRootFieldDefinition::class],
+            ],
+
+            'fields' => [],
+            /*
+                ['alias' => 'relay-connection', 'class' => RelayConnectionFieldsBuilder::class],
+                ['alias' => 'relay-edge', 'class' => RelayEdgeFieldsBuilder::class],
+            ],
+            */
+        ];
+
+        $types = ['fields', 'field', 'args'];
+        foreach ($types as $type) {
+            $builders = $config['definitions']['builders'][$type] ?? [];
+            $builders = $relayBuilders[$type] + $builders;
+            foreach ($builders as $params) {
+                $alias = $params['alias'];
+                $class = $params['class'];
+
+                $definition = $container->register($class, $class);
+                $definition = $container->register('overblog_graphql.builder_extension.legacy.'.$alias, LegacyBuilder::class);
+                $definition->setArguments([$type, new Reference($class)]);
+                $definition->addTag('overblog_graphqL.extension_builder.builder', ['alias' => $alias]);
+            }
+        }
     }
 
     private function setServicesAliases(array $config, ContainerBuilder $container): void

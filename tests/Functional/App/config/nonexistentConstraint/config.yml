@@ -8,7 +8,8 @@ overblog_graphql:
         schema:
             query: Mutation
             mutation: Mutation
-        mappings:
-            types:
-                - type: yaml
-                  dir: "%kernel.project_dir%/config/nonexistentConstraint/mapping"
+
+overblog_graphql_configuration_yaml:
+    mapping:
+        directories:
+            - "%kernel.project_dir%/config/nonexistentConstraint/mapping"

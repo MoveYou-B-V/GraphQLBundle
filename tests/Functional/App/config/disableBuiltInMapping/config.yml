@@ -1,8 +1,4 @@
 imports:
     - { resource: ../config.yml }
 
-overblog_graphql:
-    definitions:
-        mappings:
-            auto_discover:
-                built_in: false
+overblog_graphql: ~

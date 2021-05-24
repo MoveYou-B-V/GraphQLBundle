@@ -1,0 +1,6 @@
+User:
+  type: object
+  config:
+    fields:
+      usernae: String
+      url: String

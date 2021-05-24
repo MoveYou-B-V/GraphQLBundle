@@ -4,14 +4,14 @@ imports:
 
 overblog_graphql:
     security:
-        query_max_depth: '3'
+        query_max_depth: "3"
     definitions:
         class_namespace: "Overblog\\GraphQLBundle\\QueryComplexity\\__DEFINITIONS__"
         schema:
             query: Query
             mutation: ~
-        mappings:
-            types:
-                -
-                    type: yaml
-                    dir: "%kernel.project_dir%/config/queryMaxDepth/mapping"
+
+overblog_graphql_configuration_yaml:
+    mapping:
+        directories:
+            - "%kernel.project_dir%/config/queryMaxDepth/mapping"

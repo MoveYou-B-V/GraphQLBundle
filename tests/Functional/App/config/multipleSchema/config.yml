@@ -13,9 +13,7 @@ overblog_graphql:
                 query: InternalQuery
                 mutation: InternalMutation
 
-        mappings:
-            types:
-                -
-                    type: yaml
-                    dir: "%kernel.project_dir%/config/multipleSchema/mapping"
-                    suffix: ~
+overblog_graphql_configuration_yaml:
+    mapping:
+        directories:
+            - "%kernel.project_dir%/config/multipleSchema/mapping"

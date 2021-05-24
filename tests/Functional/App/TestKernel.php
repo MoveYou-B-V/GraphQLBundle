@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Overblog\GraphQLBundle\Tests\Functional\App;
 
+use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\GraphQLConfigurationMetadataBundle;
+use Overblog\GraphQL\Bundle\ConfigurationSdlBundle\GraphQLConfigurationSdlBundle;
+use Overblog\GraphQL\Bundle\ConfigurationYamlBundle\GraphQLConfigurationYamlBundle;
 use Overblog\GraphQLBundle\OverblogGraphQLBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -26,6 +29,9 @@ final class TestKernel extends Kernel implements CompilerPassInterface
         yield new FrameworkBundle();
         yield new SecurityBundle();
         yield new OverblogGraphQLBundle();
+        yield new GraphQLConfigurationYamlBundle();
+        yield new GraphQLConfigurationSdlBundle();
+        yield new GraphQLConfigurationMetadataBundle();
     }
 
     public function __construct(string $environment, bool $debug, string $testCase = null)

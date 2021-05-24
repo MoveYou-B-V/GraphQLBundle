@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Overblog\GraphQLBundle;
 
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\AliasedPass;
-use Overblog\GraphQLBundle\DependencyInjection\Compiler\ConfigParserPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\ExpressionFunctionPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\GraphQLServicesPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\MutationTaggedServiceMappingTaggedPass;
@@ -38,7 +37,6 @@ class OverblogGraphQLBundle extends Bundle
         parent::build($container);
 
         //TypeGeneratorPass must be before TypeTaggedServiceMappingPass
-        $container->addCompilerPass(new ConfigParserPass());
         $container->addCompilerPass(new GraphQLServicesPass());
         $container->addCompilerPass(new ExpressionFunctionPass());
         $container->addCompilerPass(new ResolverMethodAliasesPass());

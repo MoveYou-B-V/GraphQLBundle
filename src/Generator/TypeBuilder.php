@@ -21,18 +21,32 @@ use Murtukov\PHPCodeGenerator\Instance;
 use Murtukov\PHPCodeGenerator\Literal;
 use Murtukov\PHPCodeGenerator\PhpFile;
 use Murtukov\PHPCodeGenerator\Utils;
+use Overblog\GraphQLBundle\Configuration\ArgumentConfiguration;
+use Overblog\GraphQLBundle\Configuration\EnumConfiguration;
+use Overblog\GraphQLBundle\Configuration\EnumValueConfiguration;
+use Overblog\GraphQLBundle\Configuration\FieldConfiguration;
+use Overblog\GraphQLBundle\Configuration\InputConfiguration;
+use Overblog\GraphQLBundle\Configuration\InputFieldConfiguration;
+use Overblog\GraphQLBundle\Configuration\InterfaceConfiguration;
+use Overblog\GraphQLBundle\Configuration\ObjectConfiguration;
+use Overblog\GraphQLBundle\Configuration\RootTypeConfiguration;
+use Overblog\GraphQLBundle\Configuration\ScalarConfiguration;
+use Overblog\GraphQLBundle\Configuration\TypeConfiguration;
+use Overblog\GraphQLBundle\Configuration\UnionConfiguration;
 use Overblog\GraphQLBundle\Definition\ConfigProcessor;
 use Overblog\GraphQLBundle\Definition\GraphQLServices;
 use Overblog\GraphQLBundle\Definition\Type\CustomScalarType;
 use Overblog\GraphQLBundle\Definition\Type\GeneratedTypeInterface;
 use Overblog\GraphQLBundle\Error\ResolveErrors;
 use Overblog\GraphQLBundle\ExpressionLanguage\ExpressionLanguage as EL;
+use Overblog\GraphQLBundle\Extension\Access\AccessExtension;
+use Overblog\GraphQLBundle\Extension\IsPublic\IsPublicExtension;
+use Overblog\GraphQLBundle\Extension\Validation\ValidationExtension;
 use Overblog\GraphQLBundle\Generator\Converter\ExpressionConverter;
 use Overblog\GraphQLBundle\Generator\Exception\GeneratorException;
 use Overblog\GraphQLBundle\Validator\InputValidator;
 use function array_map;
 use function class_exists;
-use function count;
 use function explode;
 use function in_array;
 use function is_array;
@@ -65,19 +79,18 @@ class TypeBuilder
     protected const BUILT_IN_TYPES = [Type::STRING, Type::INT, Type::FLOAT, Type::BOOLEAN, Type::ID];
 
     protected const EXTENDS = [
-        'object' => ObjectType::class,
-        'input-object' => InputObjectType::class,
-        'interface' => InterfaceType::class,
-        'union' => UnionType::class,
-        'enum' => EnumType::class,
-        'custom-scalar' => CustomScalarType::class,
+        TypeConfiguration::TYPE_OBJECT => ObjectType::class,
+        TypeConfiguration::TYPE_INPUT => InputObjectType::class,
+        TypeConfiguration::TYPE_INTERFACE => InterfaceType::class,
+        TypeConfiguration::TYPE_UNION => UnionType::class,
+        TypeConfiguration::TYPE_ENUM => EnumType::class,
+        TypeConfiguration::TYPE_SCALAR => CustomScalarType::class,
     ];
 
     protected ExpressionConverter $expressionConverter;
     protected PhpFile $file;
     protected string $namespace;
-    protected array $config;
-    protected string $type;
+    protected RootTypeConfiguration $typeConfiguration;
     protected string $currentField;
     protected string $gqlServices = '$'.TypeGenerator::GRAPHQL_SERVICES;
 
@@ -108,19 +121,18 @@ class TypeBuilder
      *
      * @throws GeneratorException
      */
-    public function build(array $config, string $type): PhpFile
+    public function build(RootTypeConfiguration $config): PhpFile
     {
         // This values should be accessible from every method
-        $this->config = $config;
-        $this->type = $type;
+        $this->typeConfiguration = $config;
 
         $this->file = PhpFile::new()->setNamespace($this->namespace);
 
-        $class = $this->file->createClass($config['class_name'])
+        $class = $this->file->createClass($config->getClassName())
             ->setFinal()
-            ->setExtends(static::EXTENDS[$type])
+            ->setExtends(static::EXTENDS[$config->getGraphQLType()])
             ->addImplements(GeneratedTypeInterface::class)
-            ->addConst('NAME', $config['name'])
+            ->addConst('NAME', $config->getName())
             ->setDocBlock(static::DOCBLOCK_TEXT);
 
         $class->emptyLine();
@@ -285,69 +297,81 @@ class TypeBuilder
      *
      * @throws GeneratorException
      */
-    protected function buildConfig(array $config): Collection
+    protected function buildConfig(RootTypeConfiguration $config): Collection
     {
-        // Convert to an object for a better readability
-        $c = (object) $config;
-
         $configLoader = Collection::assoc();
         $configLoader->addItem('name', new Literal('self::NAME'));
 
-        if (isset($c->description)) {
-            $configLoader->addItem('description', $c->description);
+        if ($config->hasDescription()) {
+            $configLoader->addItem('description', $config->getDescription());
         }
 
-        // only by input-object types (for class level validation)
-        if (isset($c->validation)) {
-            $configLoader->addItem('validation', $this->buildValidationRules($c->validation));
+        // Type with fields
+        if ($config instanceof ObjectConfiguration ||
+            $config instanceof InterfaceConfiguration ||
+            $config instanceof InputConfiguration
+        ) {
+            if (!empty($config->getFields())) {
+                $configLoader->addItem('fields', ArrowFunction::new(
+                    Collection::map($config->getFields(true), [$this, 'buildField'])
+                ));
+            }
         }
 
-        // only by object, input-object and interface types
-        if (!empty($c->fields)) {
-            $configLoader->addItem('fields', ArrowFunction::new(
-                Collection::map($c->fields, [$this, 'buildField'])
-            ));
+        // Object (interfaces & resolveField)
+        if ($config instanceof ObjectConfiguration) {
+            if (!empty($config->getInterfaces())) {
+                $items = array_map(fn ($type) => "$this->gqlServices->getType('$type')", $config->getInterfaces());
+                $configLoader->addItem('interfaces', ArrowFunction::new(Collection::numeric($items, true)));
+            }
+
+            if (null !== $config->getResolveField()) {
+                $configLoader->addItem('resolveField', $this->buildResolve($config->getResolveField()));
+            }
         }
 
-        if (!empty($c->interfaces)) {
-            $items = array_map(fn ($type) => "$this->gqlServices->getType('$type')", $c->interfaces);
-            $configLoader->addItem('interfaces', ArrowFunction::new(Collection::numeric($items, true)));
+        // Input type
+        if ($config instanceof InputConfiguration) {
+            if ($config->hasExtension(ValidationExtension::ALIAS)) {
+                $configLoader->addItem('validation', $this->buildValidationRules($config->getExtension(ValidationExtension::ALIAS)->getConfiguration()));
+            }
         }
 
-        if (!empty($c->types)) {
-            $items = array_map(fn ($type) => "$this->gqlServices->getType('$type')", $c->types);
+        // Union (types)
+        if ($config instanceof UnionConfiguration && !empty($config->getTypes())) {
+            $items = array_map(fn ($type) => "$this->gqlServices->getType('$type')", $config->getTypes());
             $configLoader->addItem('types', ArrowFunction::new(Collection::numeric($items, true)));
         }
 
-        if (isset($c->resolveType)) {
-            $configLoader->addItem('resolveType', $this->buildResolveType($c->resolveType));
+        // Interface or union (resolveType)
+        if ($config instanceof InterfaceConfiguration || $config instanceof UnionConfiguration) {
+            if (null !== $config->getResolveType()) {
+                $configLoader->addItem('resolveType', $this->buildResolveType($config->getResolveType()));
+            }
         }
 
-        if (isset($c->resolveField)) {
-            $configLoader->addItem('resolveField', $this->buildResolve($c->resolveField));
+        // Enum (values)
+        if ($config instanceof EnumConfiguration && !empty($config->getValues())) {
+            $values = array_map(fn (EnumValueConfiguration $conf) => $conf->toArray(), $config->getValues(true));
+            $configLoader->addItem('values', Collection::assoc($values));
         }
 
-        // only by enum types
-        if (isset($c->values)) {
-            $configLoader->addItem('values', Collection::assoc($c->values));
-        }
-
-        // only by custom-scalar types
-        if ('custom-scalar' === $this->type) {
-            if (isset($c->scalarType)) {
-                $configLoader->addItem('scalarType', $c->scalarType);
+        // Scalar
+        if ($config instanceof ScalarConfiguration) {
+            if (null !== $config->getScalarType()) {
+                $configLoader->addItem('scalarType', $config->getScalarType());
             }
 
-            if (isset($c->serialize)) {
-                $configLoader->addItem('serialize', $this->buildScalarCallback($c->serialize, 'serialize'));
+            if (null !== $config->getSerialize()) {
+                $configLoader->addItem('serialize', $this->buildScalarCallback($config->getSerialize(), 'serialize'));
             }
 
-            if (isset($c->parseValue)) {
-                $configLoader->addItem('parseValue', $this->buildScalarCallback($c->parseValue, 'parseValue'));
+            if (null !== $config->getParseValue()) {
+                $configLoader->addItem('parseValue', $this->buildScalarCallback($config->getParseValue(), 'parseValue'));
             }
 
-            if (isset($c->parseLiteral)) {
-                $configLoader->addItem('parseLiteral', $this->buildScalarCallback($c->parseLiteral, 'parseLiteral'));
+            if (null !== $config->getParseLiteral()) {
+                $configLoader->addItem('parseLiteral', $this->buildScalarCallback($config->getParseLiteral(), 'parseLiteral'));
             }
         }
 
@@ -383,7 +407,7 @@ class TypeBuilder
 
         $className = Utils::resolveQualifier($class);
 
-        if ($className === $this->config['class_name']) {
+        if ($className === $this->typeConfiguration->getClassName()) {
             // Create an alias if name of serializer is same as type name
             $className = 'Base'.$className;
             $this->file->addUse($class, $className);
@@ -495,14 +519,15 @@ class TypeBuilder
      */
     private function configContainsValidation(): bool
     {
-        $fieldConfig = $this->config['fields'][$this->currentField];
+        /** @var FieldConfiguration $fieldConfiguration */
+        $fieldConfiguration = $this->typeConfiguration->getField($this->currentField);
 
-        if (!empty($fieldConfig['validation'])) {
+        if ($fieldConfiguration->hasExtension(ValidationExtension::ALIAS)) {
             return true;
         }
 
-        foreach ($fieldConfig['args'] ?? [] as $argConfig) {
-            if (!empty($argConfig['validation'])) {
+        foreach ($fieldConfiguration->getArguments() as $argument) {
+            if ($argument->hasExtension(ValidationExtension::ALIAS)) {
                 return true;
             }
         }
@@ -678,64 +703,53 @@ class TypeBuilder
      *
      * @return GeneratorInterface|Collection|string
      */
-    public function buildField(array $fieldConfig, string $fieldname)
+    public function buildField(TypeConfiguration $fieldConfig, string $fieldname)
     {
         $this->currentField = $fieldname;
 
-        // Convert to object for better readability
-        $c = (object) $fieldConfig;
-
-        // If there is only 'type', use shorthand
-        if (1 === count($fieldConfig) && isset($c->type)) {
-            return $this->buildType($c->type);
-        }
-
         $field = Collection::assoc()
-            ->addItem('type', $this->buildType($c->type));
+            ->addItem('type', $this->buildType($fieldConfig->getType()));
 
-        // only for object types
-        if (isset($c->resolve)) {
-            if (isset($c->validation)) {
-                $field->addItem('validation', $this->buildValidationRules($c->validation));
-            }
-            $field->addItem('resolve', $this->buildResolve($c->resolve, $fieldConfig['validationGroups'] ?? null));
+        if ($fieldConfig->hasDescription()) {
+            $field->addItem('description', $fieldConfig->getDescription());
         }
 
-        if (isset($c->deprecationReason)) {
-            $field->addItem('deprecationReason', $c->deprecationReason);
-        }
-
-        if (isset($c->description)) {
-            $field->addItem('description', $c->description);
-        }
-
-        if (!empty($c->args)) {
-            $field->addItem('args', Collection::map($c->args, [$this, 'buildArg'], false));
-        }
-
-        if (isset($c->complexity)) {
-            $field->addItem('complexity', $this->buildComplexity($c->complexity));
-        }
-
-        if (isset($c->public)) {
-            $field->addItem('public', $this->buildPublic($c->public));
-        }
-
-        if (isset($c->access)) {
-            $field->addItem('access', $this->buildAccess($c->access));
-        }
-
-        if (!empty($c->access) && is_string($c->access) && EL::expressionContainsVar('object', $c->access)) {
-            $field->addItem('useStrictAccess', false);
-        }
-
-        if ('input-object' === $this->type) {
-            if (property_exists($c, 'defaultValue')) {
-                $field->addItem('defaultValue', $c->defaultValue);
+        // only for object/interface fields types
+        if ($fieldConfig instanceof FieldConfiguration) {
+            if (null !== $fieldConfig->getResolve()) {
+                $field->addItem('resolve', $this->buildResolve($fieldConfig->getResolve(), null)); // $fieldConfig['validationGroups'] ?? null)); XXX VALIDATION
             }
 
-            if (isset($c->validation)) {
-                $field->addItem('validation', $this->buildValidationRules($c->validation));
+            if ($fieldConfig->hasDeprecationReason()) {
+                $field->addItem('deprecationReason', $fieldConfig->getDeprecationReason());
+            }
+            if (!empty($fieldConfig->getArguments())) {
+                $field->addItem('args', Collection::map($fieldConfig->getArguments(true), [$this, 'buildArg'], false));
+            }
+            if (null !== $fieldConfig->getComplexity()) {
+                $field->addItem('complexity', $this->buildComplexity($fieldConfig->getComplexity()));
+            }
+
+            if ($fieldConfig->hasExtension(IsPublicExtension::ALIAS)) {
+                $field->addItem('public', $this->buildPublic($fieldConfig->getExtension(IsPublicExtension::ALIAS)->getConfiguration()));
+            }
+
+            if ($fieldConfig->hasExtension(AccessExtension::ALIAS)) {
+                $access = $fieldConfig->getExtension(AccessExtension::ALIAS)->getConfiguration();
+                $field->addItem('access', $this->buildAccess($access));
+                if (!empty($access) && is_string($access) && EL::expressionContainsVar('object', $access)) {
+                    $field->addItem('useStrictAccess', false);
+                }
+            }
+        }
+
+        if ($fieldConfig->hasExtension(ValidationExtension::ALIAS)) {
+            $field->addItem('validation', $this->buildValidationRules($fieldConfig->getExtension(ValidationExtension::ALIAS)->getConfiguration()));
+        }
+
+        if ($fieldConfig instanceof InputFieldConfiguration) {
+            if ($fieldConfig->hasDefaultValue()) {
+                $field->addItem('defaultValue', $fieldConfig->getDefaultValue());
             }
         }
 
@@ -763,29 +777,27 @@ class TypeBuilder
      *
      * @throws GeneratorException
      */
-    public function buildArg(array $argConfig, string $argName): Collection
+    public function buildArg(ArgumentConfiguration $argConfig, string $argName): Collection
     {
-        // Convert to object for better readability
-        $c = (object) $argConfig;
-
         $arg = Collection::assoc()
-            ->addItem('name', $argName)
-            ->addItem('type', $this->buildType($c->type));
+            ->addItem('name', $argConfig->getName())
+            ->addItem('type', $this->buildType($argConfig->getType()));
 
-        if (isset($c->description)) {
-            $arg->addIfNotEmpty('description', $c->description);
+        if ($argConfig->hasDescription()) {
+            $arg->addIfNotEmpty('description', $argConfig->getDescription());
         }
 
-        if (property_exists($c, 'defaultValue')) {
-            $arg->addItem('defaultValue', $c->defaultValue);
+        if ($argConfig->hasDefaultValue()) {
+            $arg->addIfNotEmpty('defaultValue', $argConfig->getDefaultValue());
         }
 
-        if (!empty($c->validation)) {
-            if (in_array($c->type, self::BUILT_IN_TYPES) && isset($c->validation['cascade'])) {
+        if ($argConfig->hasExtension(ValidationExtension::ALIAS)) {
+            $validation = $argConfig->getExtension(ValidationExtension::ALIAS)->getConfiguration();
+            if (in_array($argConfig->getType(), self::BUILT_IN_TYPES) && isset($validation['cascade'])) {
                 throw new GeneratorException('Cascade validation cannot be applied to built-in types.');
             }
 
-            $arg->addIfNotEmpty('validation', $this->buildValidationRules($c->validation));
+            $arg->addIfNotEmpty('validation', $this->buildValidationRules($validation));
         }
 
         return $arg;
