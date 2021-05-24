@@ -1,4 +1,6 @@
 imports:
     - { resource: ../config.yml }
 
-overblog_graphql: ~
+overblog_graphql:
+    definitions:
+        register_built_in_types: false

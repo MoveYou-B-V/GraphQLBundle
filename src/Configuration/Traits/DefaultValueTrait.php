@@ -24,6 +24,10 @@ trait DefaultValueTrait
     {
         $this->defaultValue = $defaultValue;
         $this->isDefaultValueSet = true;
+        if ('diameter' === $this->getName()) {
+            debug_print_backtrace(0, 1);
+            exit();
+        }
 
         return $this;
     }

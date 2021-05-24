@@ -64,6 +64,7 @@ class OverblogGraphQLExtension extends Extension
         $this->setCompilerCacheWarmer($config, $container);
         $this->registerForAutoconfiguration($container);
         $this->setDefaultFieldResolver($config, $container);
+        $this->registerBuiltInTypes($config, $container);
 
         $container->setParameter($this->getAlias().'.config', $config);
         $container->setParameter($this->getAlias().'.schemas', $config['definitions']['schema']);
@@ -117,6 +118,13 @@ class OverblogGraphQLExtension extends Extension
     private function setDefaultFieldResolver(array $config, ContainerBuilder $container): void
     {
         $container->setAlias($this->getAlias().'.default_field_resolver', $config['definitions']['default_field_resolver']);
+    }
+
+    private function registerBuiltInTypes(array $config, ContainerBuilder $container): void
+    {
+        if (false === $config['definitions']['register_built_in_types']) {
+            $container->removeDefinition('Overblog\GraphQLBundle\ConfigurationProvider\Type\PageInfoConfiguration');
+        }
     }
 
     private function setCompilerCacheWarmer(array $config, ContainerBuilder $container): void

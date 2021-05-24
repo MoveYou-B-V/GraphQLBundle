@@ -33,6 +33,8 @@ class InputField extends Metadata
      */
     public $defaultValue;
 
+    public bool $isDefaultSet = false;
+
     /**
      * @param string|null $name         The GraphQL name of the field
      * @param string|null $type         The GraphQL type of the field
@@ -45,6 +47,9 @@ class InputField extends Metadata
     ) {
         $this->name = $name;
         $this->type = $type;
-        $this->defaultValue = $defaultValue;
+        if (func_num_args() > 2) {
+            $this->defaultValue = $defaultValue;
+            $this->isDefaultSet = true;
+        }
     }
 }

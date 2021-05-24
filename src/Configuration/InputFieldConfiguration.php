@@ -18,12 +18,18 @@ class InputFieldConfiguration extends TypeConfiguration
     {
         $this->name = $name;
         $this->type = $type;
-        $this->defaultValue = $defaultValue;
+        if (func_num_args() > 2) {
+            $this->setDefaultValue($defaultValue);
+        }
     }
 
     public static function get(string $name, string $type = null, $defaultValue = null): InputFieldConfiguration
     {
-        return new static($name, $type, $defaultValue);
+        if (func_num_args() > 2) {
+            return new static($name, $type, $defaultValue);
+        } else {
+            return new static($name, $type);
+        }
     }
 
     public function getGraphQLType(): string

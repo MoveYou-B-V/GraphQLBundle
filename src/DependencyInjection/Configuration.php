@@ -132,6 +132,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('auto_compile')->defaultTrue()->end()
                 ->booleanNode('show_debug_info')->info('Show some performance stats in extensions')->defaultFalse()->end()
                 ->booleanNode('config_validation')->defaultValue($this->debug)->end()
+                ->booleanNode('register_built_in_types')->defaultValue(true)->end()
                 ->append($this->definitionsSchemaSection())
                 ->arrayNode('builders')
                     ->children()

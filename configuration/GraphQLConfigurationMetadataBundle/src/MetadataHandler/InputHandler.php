@@ -16,7 +16,7 @@ use ReflectionProperty;
 
 class InputHandler extends MetadataHandler
 {
-    const TYPE = TypeConfiguration::TYPE_INPUT;
+    public const TYPE = TypeConfiguration::TYPE_INPUT;
 
     protected function getInputName(ReflectionClass $reflectionClass, Metadata\Metadata $inputMetadata): string
     {
@@ -103,9 +103,9 @@ class InputHandler extends MetadataHandler
                 ->setOrigin($this->getOrigin($reflector));
 
             if ($fieldMetadata instanceof Metadata\InputField) {
-                if (null !== $fieldMetadata->defaultValue) {
+                if ($fieldMetadata->isDefaultSet) {
                     $fieldConfiguration->setDefaultValue($fieldMetadata->defaultValue);
-                } elseif (PHP_VERSION_ID >= 80000 && $reflector->hasDefaultValue()) {
+                } elseif (PHP_VERSION_ID >= 80000 && $reflector->hasDefaultValue() && null !== $reflector->getDefaultValue()) {
                     $fieldConfiguration->setDefaultValue($reflector->getDefaultValue());
                 }
             }

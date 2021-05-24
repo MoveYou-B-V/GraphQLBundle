@@ -105,7 +105,7 @@ class ObjectHandler extends MetadataHandler
         return $objectConfiguration;
     }
 
-    protected function addProvider(ReflectionClass $reflectionClass, Metadata\Provider $providerMetadata)
+    protected function addProvider(ReflectionClass $reflectionClass, Metadata\Provider $providerMetadata): void
     {
         $metadatas = $this->getMetadatas($reflectionClass);
         $extensions = $this->getExtensions($metadatas);
@@ -255,7 +255,7 @@ class ObjectHandler extends MetadataHandler
             $argConfiguration = ArgumentConfiguration::get($arg->name, $arg->type)
                 ->setDescription($arg->description);
 
-            if (isset($arg->default)) {
+            if ($arg->isDefaultSet) {
                 $argConfiguration->setDefaultValue($arg->default);
             }
 

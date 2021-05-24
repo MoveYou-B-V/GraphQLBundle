@@ -38,6 +38,8 @@ final class Arg extends Metadata
      */
     public $default;
 
+    public bool $isDefaultSet = false;
+
     /**
      * @param string      $name        The name of the argument
      * @param string      $type        The type of the argument
@@ -49,6 +51,9 @@ final class Arg extends Metadata
         $this->name = $name;
         $this->description = $description;
         $this->type = $type;
-        $this->default = $default;
+        if (func_num_args() > 3) {
+            $this->default = $default;
+            $this->isDefaultSet = true;
+        }
     }
 }
