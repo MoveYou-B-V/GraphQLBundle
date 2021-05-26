@@ -1,16 +1,16 @@
 parameters: ~
 
 services:
-    overblog_graphql.arguments_transformer: '@Overblog\GraphQLBundle\Transformer\ArgumentsTransformer'
+    overblog_graphql.arguments_transformer: '@Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Transformer\ArgumentsTransformer'
 
     Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ConfigurationMetadataParser:
         arguments:
-            - '@overblog_graphql.metadata.reader'
+            - "@overblog_graphql.metadata.reader"
             - '@Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap'
-            - !tagged_iterator { tag: 'overblog_graphql.metadata.handler', index_by: 'annotationClass' }
-            - '%graphql.configuration.directories.metadata%'
+            - !tagged_iterator { tag: "overblog_graphql.metadata.handler", index_by: "annotationClass" }
+            - "%graphql.configuration.directories.metadata%"
         tags:
-            - { name: 'overblog_graphql.configuration.provider' }
+            - { name: "overblog_graphql.configuration.provider" }
 
     Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap:
         public: true
@@ -19,8 +19,8 @@ services:
 
     Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Transformer\ArgumentsTransformer:
         arguments:
-            - '@?validator'
+            - "@?validator"
             - '@Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap'
 
     Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ExpressionFunction\Arguments:
-        tags: ['overblog_graphql.expression_function']
+        tags: ["overblog_graphql.expression_function"]
