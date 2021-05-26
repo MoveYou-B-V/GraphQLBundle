@@ -49,7 +49,7 @@ class LegacyArgsBuilder implements MappingInterface
             'arg1' => [
                 'type' => 'Int',
                 'defaultValue' => 3,
-                'description' => 'Arg description'
+                'description' => 'Arg description',
             ],
             'arg2' => 'String',
         ];

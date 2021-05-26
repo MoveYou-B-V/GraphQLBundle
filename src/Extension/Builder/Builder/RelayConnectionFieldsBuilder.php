@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Overblog\GraphQLBundle\Extension\Builder\Builder;
 
 use InvalidArgumentException;
+use Overblog\GraphQLBundle\Configuration\Configuration;
 use Overblog\GraphQLBundle\Configuration\FieldConfiguration;
 use Overblog\GraphQLBundle\Configuration\InterfaceConfiguration;
 use Overblog\GraphQLBundle\Configuration\ObjectConfiguration;
@@ -41,16 +42,16 @@ class RelayConnectionFieldsBuilder implements BuilderInterface
      *
      * @throws InvalidArgumentException
      */
-    public function updateConfiguration(TypeConfiguration $typeConfiguration, $config): void
+    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration, Configuration $builderConfigurationuration): void
     {
-        $edges = FieldConfiguration::get('edges', sprintf('[%s]', $config['edgeType']))
-            ->setDescription($config['edgeDescription']);
+        $edges = FieldConfiguration::get('edges', sprintf('[%s]', $builderConfiguration['edgeType']))
+            ->setDescription($builderConfiguration['edgeDescription']);
 
-        $pageInfo = FieldConfiguration::get('pageInfo', $config['pageInfoType'])
-            ->setDescription($config['pageInfoDescription']);
+        $pageInfo = FieldConfiguration::get('pageInfo', $builderConfiguration['pageInfoType'])
+            ->setDescription($builderConfiguration['pageInfoDescription']);
 
         $totalCount = FieldConfiguration::get('totalCount', 'Int')
-            ->setDescription($config['totalCountDescription']);
+            ->setDescription($builderConfiguration['totalCountDescription']);
 
         $typeConfiguration->addFields([$edges, $pageInfo, $totalCount]);
     }

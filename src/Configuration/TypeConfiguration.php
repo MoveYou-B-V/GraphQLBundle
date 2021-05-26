@@ -10,18 +10,18 @@ abstract class TypeConfiguration
 {
     use CommonTrait;
 
-    const TYPE_OBJECT = 'object';
-    const TYPE_FIELD = 'field';
-    const TYPE_ARGUMENT = 'argument';
-    const TYPE_INTERFACE = 'interface';
-    const TYPE_INPUT = 'input';
-    const TYPE_INPUT_FIELD = 'input_field';
-    const TYPE_ENUM = 'enum';
-    const TYPE_UNION = 'union';
-    const TYPE_SCALAR = 'scalar';
-    const TYPE_ENUM_VALUE = 'enum_value';
+    public const TYPE_OBJECT = 'object';
+    public const TYPE_FIELD = 'field';
+    public const TYPE_ARGUMENT = 'argument';
+    public const TYPE_INTERFACE = 'interface';
+    public const TYPE_INPUT = 'input';
+    public const TYPE_INPUT_FIELD = 'input_field';
+    public const TYPE_ENUM = 'enum';
+    public const TYPE_UNION = 'union';
+    public const TYPE_SCALAR = 'scalar';
+    public const TYPE_ENUM_VALUE = 'enum_value';
 
-    const TYPES = [
+    public const TYPES = [
         self::TYPE_OBJECT,
         self::TYPE_FIELD,
         self::TYPE_ARGUMENT,
@@ -37,13 +37,13 @@ abstract class TypeConfiguration
     /**
      * @see https://facebook.github.io/graphql/draft/#sec-Input-and-Output-Types
      */
-    const VALID_INPUT_TYPES = [
+    public const VALID_INPUT_TYPES = [
         self::TYPE_SCALAR,
         self::TYPE_ENUM,
         self::TYPE_INPUT,
     ];
 
-    const VALID_OUTPUT_TYPES = [
+    public const VALID_OUTPUT_TYPES = [
         self::TYPE_SCALAR,
         self::TYPE_OBJECT,
         self::TYPE_INTERFACE,
@@ -88,6 +88,6 @@ abstract class TypeConfiguration
             $parent = $parent->getParent();
         }
 
-        return join('.', $path);
+        return implode('.', $path);
     }
 }

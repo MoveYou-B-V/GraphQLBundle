@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Overblog\GraphQLBundle\Extension\Builder\Builder;
 
 use InvalidArgumentException;
+use Overblog\GraphQLBundle\Configuration\Configuration;
 use Overblog\GraphQLBundle\Configuration\FieldConfiguration;
 use Overblog\GraphQLBundle\Configuration\InterfaceConfiguration;
 use Overblog\GraphQLBundle\Configuration\ObjectConfiguration;
@@ -38,7 +39,7 @@ class RelayEdgeFieldsBuilder implements BuilderInterface
      *
      * @throws InvalidArgumentException
      */
-    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration): void
+    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration, Configuration $configuration): void
     {
         $node = FieldConfiguration::get('node', $builderConfiguration['nodeType'])
                 ->setDescription($builderConfiguration['nodeDescription']);

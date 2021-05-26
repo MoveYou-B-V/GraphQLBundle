@@ -42,7 +42,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
     protected TypeGuesser $typeGuesser;
     protected ConfigurationMetadataParser $configurationParser;
     protected ClassesTypesMap $classesTypesMap;
-    protected array $excludeDirectories = ['Invalid', 'Deprecated'];
+    protected array $excludeDirectories = ['Invalid', 'Deprecated', 'Guesser'];
 
     abstract protected function getMetadataReader(): MetadataReaderInterface;
 
@@ -52,7 +52,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
     ];
 
     protected array $doctrineMapping = [
-        'text[]' => '[String]',
+        'text[]' => ['[String]', '[String]!'],
     ];
 
     public function formatMetadata(string $metadata): string
@@ -591,10 +591,10 @@ abstract class ConfigurationMetadataTest extends WebTestCase
                     ['name' => 'text', 'type' => 'String!'],
                     ['name' => 'string', 'type' => 'String!'],
                     ['name' => 'size', 'type' => 'Int'],
-                    ['name' => 'holders', 'type' => '[Hero]!'],
-                    ['name' => 'creator', 'type' => 'Hero!'],
-                    ['name' => 'crystal', 'type' => 'Crystal!'],
-                    ['name' => 'battles', 'type' => '[Battle]!'],
+                    ['name' => 'holders', 'type' => '[Hero!]'],
+                    ['name' => 'creator', 'type' => 'Hero'],
+                    ['name' => 'crystal', 'type' => 'Crystal'],
+                    ['name' => 'battles', 'type' => '[Battle!]'],
                     ['name' => 'currentHolder', 'type' => 'Hero'],
                     ['name' => 'tags', 'type' => '[String]!', 'deprecationReason' => 'No more tags on lightsabers'],
                     ['name' => 'float', 'type' => 'Float!'],

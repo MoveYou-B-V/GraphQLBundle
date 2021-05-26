@@ -43,7 +43,7 @@ class ExtensionConfiguration
         return $this->configuration;
     }
 
-    public function setProcessedConfiguration($configuration)
+    public function setProcessedConfiguration($configuration): void
     {
         if (true === $this->processed) {
             throw new Exception('Extension configuration has already been processed');

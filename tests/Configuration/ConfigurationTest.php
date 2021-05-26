@@ -13,7 +13,7 @@ use Overblog\GraphQLBundle\Configuration\ObjectConfiguration;
 
 class ConfigurationTest extends BaseConfigurationTest
 {
-    public function testMerging()
+    public function testMerging(): void
     {
         $configuration1 = (new Configuration())
             ->addType(self::object('Type1', ['f' => 'String']))
@@ -28,7 +28,7 @@ class ConfigurationTest extends BaseConfigurationTest
         $this->assertCount(4, $configuration1->getTypes());
     }
 
-    public function testRetrieveTypeByPath()
+    public function testRetrieveTypeByPath(): void
     {
         $configuration = new Configuration();
         $configuration

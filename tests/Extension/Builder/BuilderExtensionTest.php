@@ -34,7 +34,7 @@ class MyBuilder implements BuilderInterface
         return $treeBuilder;
     }
 
-    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration): void
+    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration, Configuration $configuration): void
     {
     }
 }
@@ -56,7 +56,7 @@ class MyBuilder2 implements BuilderInterface
         return $treeBuilder;
     }
 
-    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration): void
+    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration, Configuration $configuration): void
     {
     }
 }
@@ -81,28 +81,28 @@ class BuilderExtensionTest extends TestCase
         return new BuilderExtension($builders);
     }
 
-    public function testMissingBuilder()
+    public function testMissingBuilder(): void
     {
         $field = FieldConfiguration::get('MyField', 'String');
         $this->expectExceptionMessage('Builder "UnknowBuilder" not found. Available builders: MyBuilder');
         $this->getExtension()->handleConfiguration($this->c, $field, ['name' => 'UnknowBuilder']);
     }
 
-    public function testBuilderIncompatibleType()
+    public function testBuilderIncompatibleType(): void
     {
         $field = FieldConfiguration::get('MyField', 'String');
         $this->expectExceptionMessage('The builder "MyBuilder" doesn\'t support GraphQL type "field"');
         $this->getExtension()->handleConfiguration($this->c, $field, ['name' => 'MyBuilder']);
     }
 
-    public function testBuilderInvalidConfiguration()
+    public function testBuilderInvalidConfiguration(): void
     {
         $object = ObjectConfiguration::get('MyType');
         $this->expectExceptionMessageMatches('/Unrecognized option "foo" under "MyBuilder"/');
         $this->getExtension()->handleConfiguration($this->c, $object, ['name' => 'MyBuilder', 'configuration' => ['foo' => 'bar']]);
     }
 
-    public function testBuilderConfiguration()
+    public function testBuilderConfiguration(): void
     {
         $object = ObjectConfiguration::get('MyType');
         $this->getExtension()->getBuilder('MyBuilder')
@@ -112,7 +112,7 @@ class BuilderExtensionTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testBuilderConfigurationString()
+    public function testBuilderConfigurationString(): void
     {
         $object = ObjectConfiguration::get('MyType');
 

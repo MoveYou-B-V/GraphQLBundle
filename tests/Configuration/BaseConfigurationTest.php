@@ -26,7 +26,7 @@ abstract class BaseConfigurationTest extends TestCase
     {
         $object = new ObjectConfiguration($name);
         foreach ($fields as $idx => $field) {
-            list($name, $type) = is_string($idx) ? [$idx, $field] : $field;
+            [$name, $type] = is_string($idx) ? [$idx, $field] : $field;
             $object->addField(new FieldConfiguration($name, $type));
         }
 
@@ -37,7 +37,7 @@ abstract class BaseConfigurationTest extends TestCase
     {
         $input = new InputConfiguration($name);
         foreach ($fields as $idx => $field) {
-            list($name, $type) = is_string($idx) ? [$idx, $field] : $field;
+            [$name, $type] = is_string($idx) ? [$idx, $field] : $field;
             $input->addField(new InputFieldConfiguration($name, $type));
         }
 

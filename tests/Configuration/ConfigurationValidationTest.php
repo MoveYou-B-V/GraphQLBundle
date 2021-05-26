@@ -15,7 +15,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Forbidden strategy, no types with the same name
      */
-    public function testDuplicateForbiddenType()
+    public function testDuplicateForbiddenType(): void
     {
         $configuration = (new Configuration())
                 ->addType(self::object('DuplicatedName', ['f' => 'String']))
@@ -31,7 +31,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Forbidden strategy, no fields with the same name
      */
-    public function testDuplicateForbiddenField()
+    public function testDuplicateForbiddenField(): void
     {
         $configuration = new Configuration();
         $object = self::object('Type', [['duplicatedField', 'String'], ['duplicatedField', 'String']]);
@@ -46,7 +46,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Forbidden strategy, no input fields with the same name
      */
-    public function testDuplicateForbiddenInputField()
+    public function testDuplicateForbiddenInputField(): void
     {
         $configuration = new Configuration();
         $input = self::input('Input', [['duplicatedField', 'String'], ['duplicatedField', 'String']]);
@@ -61,7 +61,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Forbidden strategy, no field arguments with the same name
      */
-    public function testDuplicateForbiddenArg()
+    public function testDuplicateForbiddenArg(): void
     {
         $configuration = new Configuration();
         $object = new ObjectConfiguration('Type');
@@ -81,7 +81,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Override Same Type strategy, override same type ok
      */
-    public function testDuplicateStrategyOverrideWithMatchingTypes()
+    public function testDuplicateStrategyOverrideWithMatchingTypes(): void
     {
         $configuration = (new Configuration(Configuration::DUPLICATE_STRATEGY_OVERRIDE_SAME_TYPE))
                 ->addType(self::object('DuplicatedName', ['f' => 'String']))
@@ -96,7 +96,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Override Same Type strategy, not override different types
      */
-    public function testDuplicateStrategyOverrideWithUnmatchingTypes()
+    public function testDuplicateStrategyOverrideWithUnmatchingTypes(): void
     {
         $configuration = (new Configuration(Configuration::DUPLICATE_STRATEGY_OVERRIDE_SAME_TYPE))
                 ->addType(self::object('DuplicatedName', ['f' => 'String']))
@@ -112,7 +112,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Input fields can't have object types
      */
-    public function testInvalidInputFieldType()
+    public function testInvalidInputFieldType(): void
     {
         $object = self::object('Type', ['f' => 'String']);
         $input = self::input('Input', ['field1' => 'Type']);
@@ -130,7 +130,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Object fields can't have input type
      */
-    public function testInvalidObjectFieldType()
+    public function testInvalidObjectFieldType(): void
     {
         $object = self::object('Type', ['badField' => 'Input']);
         $input = self::input('Input', ['f' => 'String']);
@@ -148,7 +148,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Object fields must have fields
      */
-    public function testMissingObjectFields()
+    public function testMissingObjectFields(): void
     {
         $object = self::object('MyType');
         $interface = new InterfaceConfiguration('MyInterface');
@@ -171,7 +171,7 @@ class ConfigurationValidationTest extends BaseConfigurationTest
     /**
      * Names must match graphql spec
      */
-    public function testInvalidNames()
+    public function testInvalidNames(): void
     {
         $configuration = new Configuration();
         $object = self::object('Invalid+Name', ['f' => 'String']);

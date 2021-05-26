@@ -17,7 +17,7 @@ use Traversable;
  */
 class BuilderExtension extends Extension
 {
-    const ALIAS = 'builder';
+    public const ALIAS = 'builder';
 
     protected array $builders = [];
 
@@ -51,7 +51,7 @@ class BuilderExtension extends Extension
 
         $builder = $this->getBuilder($builderName);
         if (null === $builder) {
-            throw new Exception(sprintf('Builder "%s" not found. Available builders: %s', $builderName, join(', ', array_keys($this->builders))));
+            throw new Exception(sprintf('Builder "%s" not found. Available builders: %s', $builderName, implode(', ', array_keys($this->builders))));
         }
 
         if (!$builder->supports($typeConfiguration)) {
@@ -60,6 +60,6 @@ class BuilderExtension extends Extension
 
         $builderConfiguration = (new ConfigProcessor())->process($builder->getConfiguration()->buildTree(), $builderConfiguration);
 
-        $builder->updateConfiguration($typeConfiguration, $builderConfiguration);
+        $builder->updateConfiguration($typeConfiguration, $builderConfiguration, $configuration);
     }
 }

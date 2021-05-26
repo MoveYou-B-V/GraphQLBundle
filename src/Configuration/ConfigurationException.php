@@ -25,20 +25,20 @@ final class ConfigurationException extends RuntimeException
         $this->message = $message;
     }
 
-    public function addError(TypeConfiguration $type, string $error)
+    public function addError(TypeConfiguration $type, string $error): void
     {
         $this->errors[] = new ConfigurationExceptionType($type, $error);
         $this->updateMessage();
     }
 
-    public function addViolation(ConstraintViolation $violation)
+    public function addViolation(ConstraintViolation $violation): void
     {
         if ($violation->getInvalidValue() instanceof TypeConfiguration) {
             $this->addError($violation->getInvalidValue(), $violation->getMessage());
         }
     }
 
-    public function addViolations(ConstraintViolationList $violations)
+    public function addViolations(ConstraintViolationList $violations): void
     {
         foreach ($violations as $violation) {
             $this->addViolation($violation);

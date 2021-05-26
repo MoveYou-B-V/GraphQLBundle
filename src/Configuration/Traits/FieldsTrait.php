@@ -17,7 +17,6 @@ trait FieldsTrait
     protected array $fields = [];
 
     /**
-     * @param bool $indexedByName
      * @return FieldConfiguration[]
      */
     public function getFields(bool $indexedByName = false): array
@@ -30,7 +29,7 @@ trait FieldsTrait
         foreach ($this->fields as $field) {
             $fields[$field->getName()] = $field;
         }
-        
+
         return $fields;
     }
 

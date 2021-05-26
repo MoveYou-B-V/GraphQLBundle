@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Overblog\GraphQLBundle\Configuration;
 
-use Overblog\GraphQLBundle\Configuration\Traits\ClassNameTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class InputConfiguration extends RootTypeConfiguration
@@ -44,7 +43,7 @@ class InputConfiguration extends RootTypeConfiguration
         foreach ($this->fields as $field) {
             $fields[$field->getName()] = $field;
         }
-        
+
         return $fields;
     }
 

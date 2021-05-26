@@ -22,6 +22,6 @@ trait DescriptionTrait
 
     public function hasDescription(): bool
     {
-        return $this->description !== null;
+        return null !== $this->description;
     }
 }

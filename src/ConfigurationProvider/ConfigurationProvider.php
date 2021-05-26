@@ -42,7 +42,7 @@ class ConfigurationProvider
         $exception = new ConfigurationException();
 
         // Apply extension configurations
-        $configuration->apply(function (TypeConfiguration $type) use ($configuration, $exception) {
+        $configuration->apply(function (TypeConfiguration $type) use ($configuration, $exception): void {
             foreach ($type->getExtensions() as $extConfiguration) {
                 try {
                     $extension = $this->extensionsRegistry->getExtension($extConfiguration->getAlias());

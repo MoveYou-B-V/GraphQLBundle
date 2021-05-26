@@ -6,6 +6,7 @@ namespace Overblog\GraphQLBundle\Extension\Builder;
 
 use InvalidArgumentException;
 use Overblog\GraphQLBundle\Configuration\ArgumentConfiguration;
+use Overblog\GraphQLBundle\Configuration\Configuration;
 use Overblog\GraphQLBundle\Configuration\FieldConfiguration;
 use Overblog\GraphQLBundle\Configuration\InterfaceConfiguration;
 use Overblog\GraphQLBundle\Configuration\ObjectConfiguration;
@@ -15,11 +16,11 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 class LegacyBuilder implements BuilderInterface
 {
-    const TYPE_FIELDS = 'fields';
-    const TYPE_FIELD = 'field';
-    const TYPE_ARGS = 'args';
+    public const TYPE_FIELDS = 'fields';
+    public const TYPE_FIELD = 'field';
+    public const TYPE_ARGS = 'args';
 
-    const TYPES = [
+    public const TYPES = [
         self::TYPE_FIELDS,
         self::TYPE_FIELD,
         self::TYPE_ARGS,
@@ -56,7 +57,7 @@ class LegacyBuilder implements BuilderInterface
      *
      * @throws InvalidArgumentException
      */
-    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration): void
+    public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration, Configuration $configuration): void
     {
         trigger_deprecation('overblog/graphql', '0.14', 'Builders with MappingInterface have been deprecated. Use the Builder Extension with a proper builder instead.');
         $mapping = $this->legacyBuilder->toMappingDefinition($builderConfiguration ?? []);
@@ -88,7 +89,7 @@ class LegacyBuilder implements BuilderInterface
         if (is_string($mapping)) {
             $mapping = ['type' => $mapping];
         }
-        
+
         $fieldConfiguration = $field ?: FieldConfiguration::get($name, $mapping['type']);
 
         if (isset($mapping['type'])) {

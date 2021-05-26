@@ -73,7 +73,7 @@
     "symfony/translation": "If you want validation error messages to be translated."
   },
   "require-dev": {
-    "doctrine/orm": "^2.5",
+    "doctrine/orm": "^2.9",
     "phpstan/extension-installer": "^1.0",
     "phpstan/phpstan": "^0.12.58",
     "phpstan/phpstan-phpunit": "^0.12.11",

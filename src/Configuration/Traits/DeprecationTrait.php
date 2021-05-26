@@ -22,6 +22,6 @@ trait DeprecationTrait
 
     public function hasDeprecationReason(): bool
     {
-        return $this->deprecationReason !== null;
+        return null !== $this->deprecationReason;
     }
 }

@@ -26,7 +26,7 @@ class ExtensionRegistry
         if (!isset($this->extensions[$alias])) {
             $message = sprintf('Unknow extension with alias "%s". Available extensions: %s.',
                 $alias,
-                join(array_keys($this->extensions))
+                implode('', array_keys($this->extensions))
             );
             throw new ExtensionException($message);
         }

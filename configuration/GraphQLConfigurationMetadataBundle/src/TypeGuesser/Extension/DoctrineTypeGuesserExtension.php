@@ -25,6 +25,10 @@ use RuntimeException;
 class DoctrineTypeGuesserExtension extends TypeGuesserExtension
 {
     protected ?AnnotationReader $annotationReader = null;
+
+    /**
+     * @var array<string, string|string[]>
+     */
     protected array $doctrineMapping = [];
 
     public function __construct(ClassesTypesMap $classesTypesMap, array $doctrineMapping = [])
@@ -52,11 +56,17 @@ class DoctrineTypeGuesserExtension extends TypeGuesserExtension
             throw new TypeGuessingException('Doctrine type guesser only apply to properties.');
         }
         /** @var Column|null $columnAnnotation */
-        $columnAnnotation = $this->getAnnotation($reflector, Column::class);
+        $columnAnnotation = $this->getMetadata($reflector, Column::class);
 
         if (null !== $columnAnnotation) {
-            $type = $this->resolveTypeFromDoctrineType($columnAnnotation->type);
             $nullable = $columnAnnotation->nullable;
+            $doctrineType = $columnAnnotation->type ?? 'string';
+            $type = $this->resolveTypeFromDoctrineMapping($doctrineType, true === $nullable);
+            if ($type) {
+                return $type;
+            }
+
+            $type = $this->resolveTypeFromDoctrineType($doctrineType);
             if ($type) {
                 return $nullable ? $type : sprintf('%s!', $type);
             } else {
@@ -73,7 +83,7 @@ class DoctrineTypeGuesserExtension extends TypeGuesserExtension
 
         foreach ($associationAnnotations as $associationClass => $isMultiple) {
             /** @var OneToMany|OneToOne|ManyToMany|ManyToOne|null $associationAnnotation */
-            $associationAnnotation = $this->getAnnotation($reflector, $associationClass);
+            $associationAnnotation = $this->getMetadata($reflector, $associationClass);
             if (null !== $associationAnnotation) {
                 $target = $this->fullyQualifiedClassName($associationAnnotation->targetEntity, $reflectionClass->getNamespaceName());
                 $type = $this->classesTypesMap->resolveType($target, [TypeConfiguration::TYPE_OBJECT]);
@@ -81,11 +91,11 @@ class DoctrineTypeGuesserExtension extends TypeGuesserExtension
                 if ($type) {
                     $isMultiple = $associationAnnotations[get_class($associationAnnotation)];
                     if ($isMultiple) {
-                        return sprintf('[%s]!', $type);
+                        return sprintf('[%s!]', $type);
                     } else {
-                        $isNullable = false;
+                        $isNullable = true;
                         /** @var JoinColumn|null $joinColumn */
-                        $joinColumn = $this->getAnnotation($reflector, JoinColumn::class);
+                        $joinColumn = $this->getMetadata($reflector, JoinColumn::class);
                         if (null !== $joinColumn) {
                             $isNullable = $joinColumn->nullable;
                         }
@@ -98,6 +108,27 @@ class DoctrineTypeGuesserExtension extends TypeGuesserExtension
             }
         }
         throw new TypeGuessingException(sprintf('No Doctrine ORM annotation found.'));
+    }
+
+    private function getMetadata(Reflector $reflector, string $annotationClass): ?MappingAnnotation
+    {
+        return $this->getAttribute($reflector, $annotationClass) ?: $this->getAnnotation($reflector, $annotationClass);
+    }
+
+    private function getAttribute(Reflector $reflector, string $annotationClass): ?MappingAnnotation
+    {
+        if (PHP_VERSION_ID >= 80000) {
+            $attributes = $reflector->getAttributes($annotationClass);
+        } else {
+            $attributes = [];
+        }
+
+        $attribute = current($attributes) ?: null;
+        if (null !== $attribute) {
+            return $attribute->newInstance();
+        }
+
+        return null;
     }
 
     private function getAnnotation(Reflector $reflector, string $annotationClass): ?MappingAnnotation
@@ -149,14 +180,27 @@ class DoctrineTypeGuesserExtension extends TypeGuesserExtension
     }
 
     /**
+     * Resolve a GraphQLType from a user doctrine mapping type.
+     */
+    private function resolveTypeFromDoctrineMapping(string $doctrineType, bool $nullable): ?string
+    {
+        $typeMapping = $this->doctrineMapping[$doctrineType] ?? null;
+        if (null === $typeMapping) {
+            return null;
+        }
+
+        if (is_array($typeMapping)) {
+            return $typeMapping[$nullable ? 0 : 1];
+        } else {
+            return sprintf('%s%s', $typeMapping, $nullable ? '' : '!');
+        }
+    }
+
+    /**
      * Resolve a GraphQLType from a doctrine type.
      */
     private function resolveTypeFromDoctrineType(string $doctrineType): ?string
     {
-        if (isset($this->doctrineMapping[$doctrineType])) {
-            return $this->doctrineMapping[$doctrineType];
-        }
-
         switch ($doctrineType) {
             case 'integer':
             case 'smallint':

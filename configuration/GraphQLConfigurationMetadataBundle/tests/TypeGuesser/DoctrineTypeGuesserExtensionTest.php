@@ -6,6 +6,8 @@ namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\TypeGuesser;
 
 use Exception;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap;
+use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Guesser\Doctrine\LightsaberAnnotations;
+use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Guesser\Doctrine\LightsaberAttributes;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\Extension\DoctrineTypeGuesserExtension;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\TypeGuessingException;
 use ReflectionClass;
@@ -35,5 +37,55 @@ class DoctrineTypeGuesserExtensionTest extends WebTestCase
             $this->assertInstanceOf(TypeGuessingException::class, $e);
             $this->assertStringContainsString('No Doctrine ORM annotation found.', $e->getMessage());
         }
+    }
+
+    protected function testGuessClass(string $className): void
+    {
+        $classesMap = [
+            'Hero' => ['class' => 'Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Guesser\Doctrine\Hero', 'type' => 'object'],
+            'Crystal' => ['class' => 'Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Guesser\Doctrine\Crystal', 'type' => 'object'],
+            'Battle' => ['class' => 'Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Guesser\Doctrine\Battle', 'type' => 'object'],
+        ];
+
+        $doctrineMapping = [
+            'text[]' => ['[String]', '[String]!'],
+        ];
+
+        $doctrineGuesser = new DoctrineTypeGuesserExtension(new ClassesTypesMap(null, $classesMap), $doctrineMapping);
+        $refClass = new ReflectionClass($className);
+
+        $result = [];
+        foreach ($refClass->getProperties() as $refProperty) {
+            $result[$refProperty->getName()] = $doctrineGuesser->guessType($refClass, $refProperty);
+        }
+
+        $expected = [
+            'color' => 'String!',
+            'text' => 'String!',
+            'string' => 'String!',
+            'size' => 'Int',
+            'holders' => '[Hero!]',
+            'creator' => 'Hero',
+            'crystal' => 'Crystal',
+            'battles' => '[Battle!]',
+            'currentHolder' => 'Hero!',
+            'tags' => '[String]!',
+            'float' => 'Float!',
+            'decimal' => 'Float!',
+            'bool' => 'Boolean!',
+            'boolean' => 'Boolean!',
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testGuessFromAnnotations(): void
+    {
+        $this->testGuessClass(LightsaberAnnotations::class);
+    }
+
+    public function testGuessFromAttributes(): void
+    {
+        $this->testGuessClass(LightsaberAttributes::class);
     }
 }

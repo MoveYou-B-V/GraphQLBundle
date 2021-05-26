@@ -15,6 +15,17 @@ UPGRADE FROM 0.13 to 0.14
 - [Remove Argument deprecated method](#remove-argument-deprecated-method)
 - [Remove ConnectionBuilder deprecated class](#remove-connectionbuilder-deprecated-class)
 
+
+### Configuration parser bundle
+
+The various parsers (yaml, sdl, metadata) now live in their own bundles:  
+* GraphQLConfigurationMetadataBundle
+* GraphQLConfigurationYamlBundle
+* GraphQLConfigurationSdlBundle (experimental)
+
+The mapping configuration must be adjusted accordingly.
+
+
 ### Customize the cursor encoder of the edges of a connection
 
 The connection builder now accepts an optional custom cursor encoder as first argument of the constructor.
