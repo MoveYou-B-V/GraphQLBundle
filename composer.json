@@ -42,7 +42,7 @@
         "symfony/http-foundation": "^4.4.30 || ^5.3.7 || ^6.0",
         "symfony/http-kernel": "^4.4 || ^5.3 || ^6.0",
         "symfony/options-resolver": "^4.4 || ^5.3 || ^6.0",
-        "symfony/property-access": "^4.4 || ^5.3",
+        "symfony/property-access": "^4.4 || ^5.3 || ^6.0",
         "webonyx/graphql-php": ">=14.5"
     },
     "suggest": {
