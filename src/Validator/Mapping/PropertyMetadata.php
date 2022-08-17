@@ -35,7 +35,7 @@ class PropertyMetadata extends MemberMetadata
      * @return mixed
      */
     #[ReturnTypeWillChange]
-    public function getPropertyValue($object)
+    public function getPropertyValue(mixed $object): mixed
     {
         return $this->getReflectionMember($object)->getValue($object);
     }
