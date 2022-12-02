@@ -131,7 +131,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
         $this->assertEquals([
             'name' => 'Character',
             'description' => 'The character interface',
-            'resolveType' => "@=resolver('character_type', [value])",
+            'resolveType' => "@=query('character_type', value)",
             'fields' => [
                 [
                     'name' => 'name',
@@ -142,7 +142,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
                     'name' => 'friends',
                     'type' => '[Character]',
                     'description' => 'The friends of the character',
-                    'resolve' => "@=resolver('App\\MyResolver::getFriends')",
+                    'resolve' => "@=query('App\\MyResolver::getFriends')",
                 ],
             ],
         ], $interface->toArray());
@@ -169,7 +169,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
                     'name' => 'friends',
                     'type' => '[Character]',
                     'description' => 'The friends of the character',
-                    'resolve' => "@=resolver('App\\MyResolver::getFriends')",
+                    'resolve' => "@=query('App\\MyResolver::getFriends')",
                 ],
             ],
         ], $object->toArray());
@@ -187,7 +187,12 @@ abstract class ConfigurationMetadataTest extends WebTestCase
             'fields' => [
                 ['name' => 'memory', 'type' => 'Int!'],
                 ['name' => 'name', 'type' => 'String!', 'description' => 'The name of the character'],
-                ['name' => 'friends', 'type' => '[Character]', 'description' => 'The friends of the character', 'resolve' => "@=resolver('App\\MyResolver::getFriends')"],
+                [
+                    'name' => 'friends',
+                    'type' => '[Character]',
+                    'description' => 'The friends of the character',
+                    'resolve' => "@=query('App\\MyResolver::getFriends')",
+                ],
                 [
                     'name' => 'planet_allowedPlanets',
                     'type' => '[Planet]',
@@ -224,7 +229,12 @@ abstract class ConfigurationMetadataTest extends WebTestCase
                 ['name' => 'currentMaster', 'type' => 'Sith', 'resolve' => "@=service('master_resolver').getMaster(value)"],
 
                 ['name' => 'name', 'type' => 'String!', 'description' => 'The name of the character'],
-                ['name' => 'friends', 'type' => '[Character]', 'description' => 'The friends of the character', 'resolve' => "@=resolver('App\\MyResolver::getFriends')"],
+                [
+                    'name' => 'friends',
+                    'type' => '[Character]',
+                    'description' => 'The friends of the character',
+                    'resolve' => "@=query('App\\MyResolver::getFriends')",
+                ],
 
                 [
                     'name' => 'victims',
@@ -262,7 +272,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
                 [
                     'name' => 'closestPlanet',
                     'type' => 'Planet',
-                    'resolve' => "@=resolver('closest_planet', [args['filter']])",
+                    'resolve' => "@=query('closest_planet', args['filter'])",
                     'extensions' => [
                         ['alias' => BuilderExtension::ALIAS, 'configuration' => ['name' => 'PlanetFilterArgBuilder', 'configuration' => ['option2' => 'value2']]],
                     ],
@@ -277,7 +287,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
                 [
                     'name' => 'closestPlanetDeprecated',
                     'type' => 'Planet',
-                    'resolve' => "@=resolver('closest_planet', [args['filter']])",
+                    'resolve' => "@=query('closest_planet', args['filter'])",
                     'extensions' => [
                         ['alias' => BuilderExtension::ALIAS, 'configuration' => ['name' => 'PlanetFilterArgBuilder', 'configuration' => ['option2' => 'value2']]],
                     ],
@@ -344,7 +354,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
         $this->assertEquals([
             'name' => 'WithArmor',
             'description' => 'The armored interface',
-            'resolveType' => '@=resolver(\'character_type\', [value])',
+            'resolveType' => '@=query(\'character_type\', value)',
             'extensions' => [
                 ['alias' => 'CustomExtension', 'configuration' => ['config1' => 12]],
             ],
@@ -402,7 +412,12 @@ abstract class ConfigurationMetadataTest extends WebTestCase
             'interfaces' => ['Character', 'WithArmor'],
             'fields' => [
                 ['name' => 'name', 'type' => 'String!', 'description' => 'The name of the character'],
-                ['name' => 'friends', 'type' => '[Character]', 'description' => 'The friends of the character', 'resolve' => "@=resolver('App\\MyResolver::getFriends')"],
+                [
+                    'name' => 'friends',
+                    'type' => '[Character]',
+                    'description' => 'The friends of the character',
+                    'resolve' => "@=query('App\\MyResolver::getFriends')",
+                ],
                 [
                     'name' => 'planet_armorResistance',
                     'type' => 'Int!',

@@ -113,7 +113,7 @@ Calls a method on the tagged service `overblog_graphql.resolver` with `$args`
 Examples:
 ```yaml
 # Using aliased resolver name
-@=resolver('blog_by_id', [value['blogID']])
+@=query('blog_by_id', value['blogID'])
 
 # Using the 'q' alias and a FQCN::methodName.
 # Note the double quotes.

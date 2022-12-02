@@ -7,10 +7,10 @@ namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Typ
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
 
 /**
- * @GQL\TypeInterface(typeResolver="@=resolver('character_type', [value])")
+ * @GQL\TypeInterface(typeResolver="@=query('character_type', value)")
  * @GQL\Description("The character interface")
  */
-#[GQL\TypeInterface(typeResolver: "@=resolver('character_type', [value])")]
+#[GQL\TypeInterface(typeResolver: "@=query('character_type', value)")]
 #[GQL\Description("The character interface")]
 abstract class Character
 {
@@ -23,10 +23,10 @@ abstract class Character
     protected string $name;
 
     /**
-     * @GQL\Field(type="[Character]", resolve="@=resolver('App\MyResolver::getFriends')")
+     * @GQL\Field(type="[Character]", resolve="@=query('App\MyResolver::getFriends')")
      * @GQL\Description("The friends of the character")
      */
-    #[GQL\Field(type: "[Character]", resolve: "@=resolver('App\MyResolver::getFriends')")]
+    #[GQL\Field(type: "[Character]", resolve: "@=query('App\MyResolver::getFriends')")]
     #[GQL\Description("The friends of the character")]
     protected array $friends;
 }
