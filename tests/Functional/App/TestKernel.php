@@ -24,7 +24,7 @@ final class TestKernel extends Kernel implements CompilerPassInterface
     /**
      * {@inheritdoc}
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         yield new FrameworkBundle();
         yield new SecurityBundle();
