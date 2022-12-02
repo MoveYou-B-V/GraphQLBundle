@@ -15,10 +15,10 @@ overblog_graphql:
 
 These headers will be returned on preflight requests:
 
-Headers                          | Value
--------------------------------- | ---------------------------------------
-Access-Control-Allow-Origin      | the value of the request Origin header
-Access-Control-Allow-Credentials | 'true'
-Access-Control-Allow-Headers     | 'Content-Type, Authorization'
-Access-Control-Allow-Methods     | 'OPTIONS, GET, POST'
-Access-Control-Max-Age           | 3600
+| Headers                          | Value                                  |
+|----------------------------------|----------------------------------------|
+| Access-Control-Allow-Origin      | the value of the request Origin header |
+| Access-Control-Allow-Credentials | 'true'                                 |
+| Access-Control-Allow-Headers     | 'Content-Type, Authorization'          |
+| Access-Control-Allow-Methods     | 'OPTIONS, GET, POST'                   |
+| Access-Control-Max-Age           | 3600                                   |
