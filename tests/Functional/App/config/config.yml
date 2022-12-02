@@ -6,6 +6,8 @@ framework:
         utf8: true
     profiler:
         enabled: false
+    validation:
+        enabled: true
 
 security:
     providers:
