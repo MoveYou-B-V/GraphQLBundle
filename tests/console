@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Overblog\GraphQLBundle\Tests\Functional\App\TestKernel;
+
+require __DIR__ . '/bootstrap.php';
+
+$env = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? 'test';
+$testCase = $_SERVER['APP_TEST_CASE'] ?? $_ENV['APP_TEST_CASE'] ?? null;
+$kernel = new TestKernel($env, true, $testCase);
+(new Application($kernel))->run(new ArgvInput());
