@@ -11,6 +11,9 @@
       }
     }
   },
+  "require": {
+    "php": "^8.0"
+  },
   "require-dev": {
     "overblog/graphql-bundle": "@dev",
     "phpunit/phpunit": "^9.4",
