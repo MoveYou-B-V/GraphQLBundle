@@ -12,4 +12,5 @@ require __DIR__ . '/bootstrap.php';
 $env = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? 'test';
 $testCase = $_SERVER['APP_TEST_CASE'] ?? $_ENV['APP_TEST_CASE'] ?? null;
 $kernel = new TestKernel($env, true, $testCase);
+//$kernel->boot();
 (new Application($kernel))->run(new ArgvInput());

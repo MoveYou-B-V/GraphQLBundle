@@ -9,16 +9,22 @@ use Overblog\GraphQL\Bundle\ConfigurationSdlBundle\GraphQLConfigurationSdlBundle
 use Overblog\GraphQL\Bundle\ConfigurationYamlBundle\GraphQLConfigurationYamlBundle;
 use Overblog\GraphQLBundle\OverblogGraphQLBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel;
 use function sprintf;
 use function sys_get_temp_dir;
 
 final class TestKernel extends Kernel implements CompilerPassInterface
 {
+    use MicroKernelTrait {
+        registerContainerConfiguration as registerContainerConfigurationTrait;
+    }
+
     private ?string $testCase;
 
     /**
@@ -70,15 +76,22 @@ final class TestKernel extends Kernel implements CompilerPassInterface
      */
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        if (null !== $this->testCase) {
-            $loader->load(sprintf(__DIR__.'/config/%s/config.yml', $this->testCase));
-        } else {
-            $loader->load(__DIR__.'/config/config.yml');
-        }
+        $this->registerContainerConfigurationTrait($loader);
 
         $loader->load(function (ContainerBuilder $container): void {
             $container->addCompilerPass($this);
         });
+    }
+
+    private function configureContainer(ContainerConfigurator $container, LoaderInterface $loader, ContainerBuilder $builder): void
+    {
+        $configDir = $this->getConfigDir();
+
+        $loader->load($configDir.'/config.yml');
+
+        if (is_file($configDir.'/services.yml')) {
+            $container->import($configDir.'/services.yml');
+        }
     }
 
     /**
@@ -95,5 +108,18 @@ final class TestKernel extends Kernel implements CompilerPassInterface
     private function basePath(): string
     {
         return sys_get_temp_dir().'/OverblogGraphQLBundle/'.Kernel::VERSION.'/'.($this->testCase ? $this->testCase.'/' : '');
+    }
+
+    /**
+     * Gets the path to the configuration directory.
+     */
+    private function getConfigDir(): string
+    {
+        $configDir = $this->getProjectDir() . '/config';
+        if (null !== $this->testCase) {
+            $configDir .= sprintf('/%s', $this->testCase);
+        }
+
+        return $configDir;
     }
 }
