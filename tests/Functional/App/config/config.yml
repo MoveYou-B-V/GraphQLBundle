@@ -4,6 +4,7 @@ framework:
     router:
         resource: "%kernel.project_dir%/config/routing.yml"
         utf8: true
+        type: null
     profiler:
         enabled: false
     validation:
