@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Overblog\GraphQLBundle\Tests\Functional\App\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
+use Overblog\GraphQLBundle\Definition\Resolver\QueryInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class NodeResolver implements ContainerAwareInterface
+class NodeResolver implements ContainerAwareInterface, QueryInterface
 {
     use ContainerAwareTrait;
 
