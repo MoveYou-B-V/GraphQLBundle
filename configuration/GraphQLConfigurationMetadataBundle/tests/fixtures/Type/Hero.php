@@ -12,13 +12,13 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Union\Kil
  * @GQL\Type(interfaces={"Character"})
  * @GQL\Description("The Hero type")
  */
-#[GQL\Type(interfaces: ["Character"])]
-#[GQL\Description("The Hero type")]
-class Hero extends Character implements Killable
+#[GQL\Type(interfaces: ['Character'])]
+#[GQL\Description('The Hero type')]
+final class Hero extends Character implements Killable
 {
     /**
      * @GQL\Field(type="Race")
      */
-    #[GQL\Field(type: "Race")]
+    #[GQL\Field(type: 'Race')]
     protected Race $race;
 }
