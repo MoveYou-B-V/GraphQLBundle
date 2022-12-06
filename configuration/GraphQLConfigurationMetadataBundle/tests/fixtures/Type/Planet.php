@@ -13,25 +13,25 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Scalar\Ga
  */
 #[GQL\Type]
 #[GQL\Description("The Planet type")]
-class Planet
+final class Planet
 {
     /**
      * @GQL\Field(type="String!")
      */
     #[GQL\Field(type: "String!")]
-    protected string $name;
+    public string $name;
 
     /**
      * @GQL\Field(type="GalaxyCoordinates")
      */
     #[GQL\Field(type: "GalaxyCoordinates")]
-    protected GalaxyCoordinates $location;
+    public GalaxyCoordinates $location;
 
     /**
      * @GQL\Field(type="Int!")
      */
     #[GQL\Field(type: "Int!")]
-    protected int $population;
+    public int $population;
 
     /**
      * @GQL\Field(type="Builder")
@@ -55,7 +55,8 @@ class Planet
     /**
      * @GQL\Field(type="Builder", fieldBuilder={"NoteFieldBuilder", {"option1": "value1"}})
      */
-    #[GQL\Field(type: "Builder", fieldBuilder: ["NoteFieldBuilder", ["option1" => "value1"]])]
+    #[GQL\Field(type: "Builder")]
+    #[GQL\FieldBuilder("NoteFieldBuilder", ["option1" => "value1"])]
     public array $notesDeprecated;
 
     /**
@@ -65,6 +66,7 @@ class Planet
      *   resolve="@=query('closest_planet', args['filter'])"
      * )
      */
-    #[GQL\Field(type: "Planet", argsBuilder: ["PlanetFilterArgBuilder", ["option2" => "value2"]], resolve: "@=query('closest_planet', args['filter'])")]
+    #[GQL\Field(type: "Planet", resolve: "@=query('closest_planet', args['filter'])")]
+    #[GQL\ArgsBuilder("PlanetFilterArgBuilder", ["option2" => "value2"])]
     public Planet $closestPlanetDeprecated;
 }
