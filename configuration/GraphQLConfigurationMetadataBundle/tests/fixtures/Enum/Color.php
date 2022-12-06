@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Overblog\GraphQLBundle\Tests\Config\Parser\fixtures\annotations\Enum;
 
-use Overblog\GraphQLBundle\Annotation as GQL;
+use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
 
 /**
  * @GQL\Enum
