@@ -38,7 +38,7 @@ final class ConnectionBuilder
     private CursorEncoderInterface $cursorEncoder;
 
     /**
-     * Factorty callback used to generate the connection object.
+     * Factory callback used to generate the connection object.
      *
      * @var callable
      *

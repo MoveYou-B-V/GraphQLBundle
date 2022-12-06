@@ -24,7 +24,7 @@ class OverblogGraphQLConfigurationMetadataExtension extends Extension
                 break;
             case Configuration::READER_ATTRIBUTE:
                 if (PHP_VERSION_ID < 80000) {
-                    throw new InvalidConfigurationException('The attribute metadata reader is only availabe with PHP >= 8.0.');
+                    throw new InvalidConfigurationException('The attribute metadata reader is only available with PHP >= 8.0.');
                 }
 
                 $readerService = 'Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Reader\AttributeReader';

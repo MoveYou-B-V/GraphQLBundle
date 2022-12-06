@@ -46,7 +46,7 @@ class Configuration
     }
 
     /**
-     * Retrieve latest type defined with given name
+     * Retrieve the latest type defined with given name
      */
     public function getType(string $name): ?RootTypeConfiguration
     {
