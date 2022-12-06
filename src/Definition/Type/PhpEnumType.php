@@ -13,6 +13,8 @@ use GraphQL\Language\AST\EnumValueNode;
 use GraphQL\Language\AST\Node;
 use GraphQL\Type\Definition\EnumType;
 use GraphQL\Utils\Utils;
+// TODO: require PHP 8.1 in composer.json file
+//       or make some work around of undefined class.
 use ReflectionEnum;
 use UnitEnum;
 
@@ -114,6 +116,7 @@ class PhpEnumType extends EnumType
         if ($this->enumClass) {
             if (!$value instanceof $this->enumClass) {
                 $valueStr = Utils::printSafe($value);
+                // FIXME: undefined class in "webonyx/graphql-php:14.11.8"
                 throw new SerializationError("Cannot serialize value {$valueStr} as it must be an instance of enum {$this->enumClass}.");
             }
 
