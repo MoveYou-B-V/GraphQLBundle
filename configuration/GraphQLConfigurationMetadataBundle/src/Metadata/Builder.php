@@ -23,10 +23,9 @@ abstract class Builder extends Extension
      */
     public function __construct(string $name = null, array $configuration = [])
     {
-        $this->name = BuilderExtension::ALIAS;
-        $this->configuration = [
+        parent::__construct(BuilderExtension::ALIAS, [
             'name' => $name,
             'configuration' => $configuration,
-        ];
+        ]);
     }
 }
