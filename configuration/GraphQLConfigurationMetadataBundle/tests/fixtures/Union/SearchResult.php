@@ -12,6 +12,6 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
  */
 #[GQL\Union("ResultSearch", types: ["Hero", "Droid", "Sith"], typeResolver: "value.getType()")]
 #[GQL\Description("A search result")]
-class SearchResult
+final class SearchResult
 {
 }
