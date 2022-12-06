@@ -8,6 +8,9 @@ overblog_graphql:
         schema:
             query: Query
             mutation: ~
+            types:
+                - ID
+                - Float
     services:
         promise_adapter: "overblog_graphql.react.promise_adapter"
 

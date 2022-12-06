@@ -6,7 +6,7 @@ namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle;
 
 use Symfony\Contracts\Cache\CacheInterface;
 
-class ClassesTypesMap
+final class ClassesTypesMap
 {
     const CACHE_KEY = 'overblog_graphql.classes_types_map';
     protected ?CacheInterface $cache;
@@ -14,7 +14,7 @@ class ClassesTypesMap
     /**
      * @var array<string, array{class: string, type: string}>
      */
-    protected array $classesMap = [];
+    private array $classesMap = [];
 
     public function __construct(CacheInterface $cache = null, array $classesMap = [])
     {

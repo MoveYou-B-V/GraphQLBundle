@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
+
 use function call_user_func;
 use function func_get_args;
 use function implode;
@@ -49,7 +50,7 @@ abstract class TestCase extends WebTestCase
             static::$class = static::getKernelClass();
         }
 
-        $options['test_case'] = $options['test_case'] ?? '';
+        $options['test_case'] ??= '';
 
         $env = $options['environment'] ?? 'test'.strtolower($options['test_case']);
         $debug = $options['debug'] ?? true;
@@ -71,10 +72,13 @@ abstract class TestCase extends WebTestCase
         static::ensureKernelShutdown();
     }
 
-    protected static function executeGraphQLRequest(string $query, array $rootValue = [], string $schemaName = null): array
+    protected static function executeGraphQLRequest(string $query, array $rootValue = [], string $schemaName = null, array $variables = []): array
     {
         $request = new Request();
         $request->query->set('query', $query);
+        if (!empty($variables)) {
+            $request->query->set('variables', $variables);
+        }
 
         // @phpstan-ignore-next-line
         $req = static::getContainer()->get('overblog_graphql.request_parser')->parse($request);
@@ -103,6 +107,7 @@ abstract class TestCase extends WebTestCase
 
     protected static function getContainer(): ContainerInterface
     {
+        /** @phpstan-ignore-next-line */
         return static::$kernel->getContainer();
     }
 
@@ -159,9 +164,7 @@ abstract class TestCase extends WebTestCase
             return call_user_func([ExpressionFunction::class, 'fromPhp'], $phpFunctionName);
         }
 
-        return new ExpressionFunction($phpFunctionName, fn () => (
-            sprintf('\%s(%s)', $phpFunctionName, implode(', ', func_get_args()))
-        ), function (): void {});
+        return new ExpressionFunction($phpFunctionName, fn () => sprintf('\%s(%s)', $phpFunctionName, implode(', ', func_get_args())), function (): void {});
     }
 
     /**

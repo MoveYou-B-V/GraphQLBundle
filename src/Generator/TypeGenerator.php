@@ -10,16 +10,14 @@ use Overblog\GraphQLBundle\Configuration\RootTypeConfiguration;
 use Overblog\GraphQLBundle\Event\SchemaCompiledEvent;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+
 use function array_merge;
 use function file_exists;
 use function file_put_contents;
 use function str_replace;
 use function var_export;
 
-/**
- * @final
- */
-class TypeGenerator
+final class TypeGenerator
 {
     public const MODE_DRY_RUN = 1;
     public const MODE_MAPPING_ONLY = 2;
@@ -92,7 +90,7 @@ class TypeGenerator
 
             if ($mode & self::MODE_WRITE) {
                 if (($mode & self::MODE_OVERRIDE) || !file_exists($path)) {
-                    $phpFile->save($path);
+                    $phpFile->save($path, $this->getCacheDirMask());
                 }
             }
         }

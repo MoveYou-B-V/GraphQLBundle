@@ -9,7 +9,7 @@ use Overblog\GraphQLBundle\Definition\Resolver\QueryInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class NodeResolver implements ContainerAwareInterface, QueryInterface
+final class NodeResolver implements ContainerAwareInterface, QueryInterface
 {
     use ContainerAwareTrait;
 

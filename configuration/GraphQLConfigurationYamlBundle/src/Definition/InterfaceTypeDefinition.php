@@ -6,7 +6,7 @@ namespace Overblog\GraphQL\Bundle\ConfigurationYamlBundle\Definition;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
-class InterfaceTypeDefinition extends TypeWithOutputFieldsDefinition
+final class InterfaceTypeDefinition extends TypeWithOutputFieldsDefinition
 {
     public function getDefinition(): ArrayNodeDefinition
     {

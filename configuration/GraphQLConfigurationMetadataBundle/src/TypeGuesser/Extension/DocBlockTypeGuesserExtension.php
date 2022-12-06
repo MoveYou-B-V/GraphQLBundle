@@ -20,9 +20,10 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 use Reflector;
+
 use function sprintf;
 
-class DocBlockTypeGuesserExtension extends PhpTypeGuesserExtension
+final class DocBlockTypeGuesserExtension extends PhpTypeGuesserExtension
 {
     protected ?DocBlockFactory $factory;
 

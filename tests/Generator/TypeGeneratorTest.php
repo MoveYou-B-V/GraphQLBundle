@@ -7,20 +7,25 @@ namespace Overblog\GraphQLBundle\Tests\Generator;
 use Generator;
 use Overblog\GraphQLBundle\Configuration\Configuration;
 use Overblog\GraphQLBundle\Event\SchemaCompiledEvent;
+use Overblog\GraphQLBundle\ExpressionLanguage\ExpressionLanguage;
+use Overblog\GraphQLBundle\Generator\Converter\ExpressionConverter;
 use Overblog\GraphQLBundle\Generator\TypeBuilder;
 use Overblog\GraphQLBundle\Generator\TypeGenerator;
 use Overblog\GraphQLBundle\Generator\TypeGeneratorOptions;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class TypeGeneratorTest extends TestCase
+final class TypeGeneratorTest extends TestCase
 {
     /**
      * @dataProvider getPermissionsProvider
      */
     public function testCacheDirPermissions(int $expectedMask, ?string $cacheDir, ?int $cacheDirMask): void
     {
-        $typeBuilder = $this->createMock(TypeBuilder::class);
+        $typeBuilder = new TypeBuilder(
+            new ExpressionConverter(new ExpressionLanguage()),
+            'namespace'
+        );
         $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $options = new TypeGeneratorOptions('App', $cacheDir, true, null, $cacheDirMask);
@@ -32,7 +37,10 @@ class TypeGeneratorTest extends TestCase
 
     public function testCompiledEvent(): void
     {
-        $typeBuilder = $this->createMock(TypeBuilder::class);
+        $typeBuilder = new TypeBuilder(
+            new ExpressionConverter(new ExpressionLanguage()),
+            'namespace'
+        );
         $eventDispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
 
         $eventDispatcher->expects($this->once())

@@ -12,7 +12,7 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
  */
 #[GQL\Type(isTypeOf: "@=isTypeOf('App\Entity\Droid')")]
 #[GQL\Description("The Droid type")]
-class Droid extends Character
+final class Droid extends Character
 {
     /**
      * @GQL\Field

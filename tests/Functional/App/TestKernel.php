@@ -9,6 +9,7 @@ use Overblog\GraphQL\Bundle\ConfigurationSdlBundle\GraphQLConfigurationSdlBundle
 use Overblog\GraphQL\Bundle\ConfigurationYamlBundle\GraphQLConfigurationYamlBundle;
 use Overblog\GraphQLBundle\OverblogGraphQLBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel;
+
 use function sprintf;
 use function sys_get_temp_dir;
 
@@ -34,6 +36,7 @@ final class TestKernel extends Kernel implements CompilerPassInterface
     {
         yield new FrameworkBundle();
         yield new SecurityBundle();
+        yield new MonologBundle();
         yield new OverblogGraphQLBundle();
         yield new GraphQLConfigurationYamlBundle();
         yield new GraphQLConfigurationSdlBundle();

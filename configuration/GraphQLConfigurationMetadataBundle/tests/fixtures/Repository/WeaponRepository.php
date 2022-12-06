@@ -9,8 +9,8 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
 /**
  * @GQL\Provider(targetQueryTypes={"RootQuery2"}, targetMutationTypes="RootMutation2")
  */
-#[GQL\Provider(targetQueryTypes: ["RootQuery2"], targetMutationTypes: "RootMutation2")]
-class WeaponRepository
+#[GQL\Provider(targetQueryTypes: ['RootQuery2'], targetMutationTypes: 'RootMutation2')]
+final class WeaponRepository
 {
     /**
      * @GQL\Query
@@ -24,7 +24,7 @@ class WeaponRepository
     /**
      * @GQL\Query(targetTypes="RootQuery")
      */
-    #[GQL\Query(targetTypes: "RootQuery")]
+    #[GQL\Query(targetTypes: 'RootQuery')]
     public function countSecretWeapons(): int
     {
         return 2;

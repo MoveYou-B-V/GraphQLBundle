@@ -14,9 +14,10 @@ use Overblog\GraphQLBundle\Executor\Promise\Adapter\ReactPromiseAdapter;
 use Overblog\GraphQLBundle\Relay\Connection\ConnectionBuilder;
 use Overblog\GraphQLBundle\Relay\Connection\Output\Edge;
 use React\Promise\Promise as ReactPromise;
+
 use function count;
 
-class ConnectionResolver implements QueryInterface
+final class ConnectionResolver implements QueryInterface
 {
     private array $allUsers = [
         [

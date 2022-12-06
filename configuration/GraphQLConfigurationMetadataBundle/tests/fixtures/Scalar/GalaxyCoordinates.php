@@ -7,6 +7,7 @@ namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Sca
 use DateTimeInterface;
 use GraphQL\Language\AST\Node;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
+
 use function explode;
 use function implode;
 
@@ -15,8 +16,8 @@ use function implode;
  * @GQL\Description("The galaxy coordinates scalar")
  */
 #[GQL\Scalar]
-#[GQL\Description("The galaxy coordinates scalar")]
-class GalaxyCoordinates
+#[GQL\Description('The galaxy coordinates scalar')]
+final class GalaxyCoordinates
 {
     /**
      * @return string

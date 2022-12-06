@@ -7,7 +7,7 @@ namespace Overblog\GraphQL\Bundle\ConfigurationSdlBundle\ASTConverter;
 use GraphQL\Language\AST\Node;
 use GraphQL\Language\AST\NodeKind;
 
-class Type
+final class Type
 {
     public static function get(Node $node): string
     {

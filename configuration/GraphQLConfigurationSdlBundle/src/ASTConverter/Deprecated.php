@@ -7,7 +7,7 @@ namespace Overblog\GraphQL\Bundle\ConfigurationSdlBundle\ASTConverter;
 use GraphQL\Language\AST\Node;
 use GraphQL\Type\Definition\Directive;
 
-class Deprecated
+final class Deprecated
 {
     public static function get(Node $node): ?string
     {

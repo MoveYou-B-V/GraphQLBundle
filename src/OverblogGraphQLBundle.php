@@ -11,7 +11,6 @@ use Overblog\GraphQLBundle\DependencyInjection\Compiler\MutationTaggedServiceMap
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\QueryTaggedServiceMappingPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\ResolverMapTaggedServiceMappingPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\ResolverMethodAliasesPass;
-use Overblog\GraphQLBundle\DependencyInjection\Compiler\ResolverTaggedServiceMappingPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\TypeGeneratorPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\TypeTaggedServiceMappingPass;
 use Overblog\GraphQLBundle\DependencyInjection\OverblogGraphQLExtension;
@@ -20,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class OverblogGraphQLBundle extends Bundle
+final class OverblogGraphQLBundle extends Bundle
 {
     public function boot(): void
     {
@@ -36,7 +35,7 @@ class OverblogGraphQLBundle extends Bundle
     {
         parent::build($container);
 
-        //TypeGeneratorPass must be before TypeTaggedServiceMappingPass
+        // TypeGeneratorPass must be before TypeTaggedServiceMappingPass
         $container->addCompilerPass(new GraphQLServicesPass());
         $container->addCompilerPass(new ExpressionFunctionPass());
         $container->addCompilerPass(new ResolverMethodAliasesPass());
@@ -46,9 +45,6 @@ class OverblogGraphQLBundle extends Bundle
         $container->addCompilerPass(new TypeTaggedServiceMappingPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new QueryTaggedServiceMappingPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new MutationTaggedServiceMappingTaggedPass(), PassConfig::TYPE_BEFORE_REMOVING);
-        // TODO: remove next line in 1.0
-        // TODO workaround missed class
-        // $container->addCompilerPass(new ResolverTaggedServiceMappingPass(), PassConfig::TYPE_BEFORE_REMOVING);
     }
 
     public function getContainerExtension(): ?ExtensionInterface

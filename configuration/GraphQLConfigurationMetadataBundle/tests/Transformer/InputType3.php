@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\Transformer;
 
-class InputType3
+final class InputType3
 {
     /**
      * @var mixed

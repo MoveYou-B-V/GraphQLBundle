@@ -11,12 +11,12 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
  * @GQL\Type
  */
 #[GQL\Type]
-class InvalidDoctrineRelationGuessing
+final class InvalidDoctrineRelationGuessing
 {
     /**
      * @ORM\OneToOne(targetEntity="MissingType")
      * @GQL\Field
      */
     #[GQL\Field]
-    protected object $myRelation;
+    public object $myRelation;
 }

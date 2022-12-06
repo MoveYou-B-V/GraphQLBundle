@@ -8,7 +8,7 @@ use Overblog\GraphQL\Bundle\ConfigurationYamlBundle\ConfigurationYamlParser;
 use Overblog\GraphQL\Bundle\ConfigurationYamlBundle\Processor\InheritanceProcessor;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class InheritanceTest extends WebTestCase
+final class InheritanceTest extends WebTestCase
 {
     protected function getInheritanceConfiguration()
     {

@@ -12,7 +12,7 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
  */
 #[GQL\Type]
 #[GQL\Description("The Cat type")]
-class Cat extends Animal
+final class Cat extends Animal
 {
     /**
      * @GQL\Field(type="Int!")

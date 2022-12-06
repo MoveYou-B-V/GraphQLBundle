@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Routing\Router;
 use Twig\Environment;
 
-class ProfilerControllerTest extends TestCase
+final class ProfilerControllerTest extends TestCase
 {
     /**
      * @return Router&MockObject
@@ -83,7 +83,6 @@ class ProfilerControllerTest extends TestCase
         /** @var Environment&MockObject $twigMock */
         $twigMock = $this->getMockBuilder(Environment::class)->disableOriginalConstructor()->onlyMethods(['render'])->getMock();
         $controller = new ProfilerController($profilerMock, $twigMock, $routerMock, $executorMock, null);
-        $graphqlData = ['graphql_data'];
 
         /** @var Profiler&MockObject $profilerMock */
         $profilerMock->expects($this->once())->method('disable');

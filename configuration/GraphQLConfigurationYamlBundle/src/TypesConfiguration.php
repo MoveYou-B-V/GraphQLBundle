@@ -8,6 +8,7 @@ use Overblog\GraphQL\Bundle\ConfigurationYamlBundle\Processor\InheritanceProcess
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+
 use function array_keys;
 use function array_map;
 use function implode;
@@ -18,7 +19,7 @@ use function preg_match;
 use function sprintf;
 use function str_replace;
 
-class TypesConfiguration implements ConfigurationInterface
+final class TypesConfiguration implements ConfigurationInterface
 {
     const TYPE_OBJECT = 'object';
     const TYPE_ENUM = 'enum';
@@ -36,7 +37,7 @@ class TypesConfiguration implements ConfigurationInterface
         self::TYPE_SCALAR,
     ];
 
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('overblog_graphql_types');
 
@@ -132,7 +133,7 @@ class TypesConfiguration implements ConfigurationInterface
                 ->ifTrue(fn ($types) => is_array($types))
                 ->then(fn ($types) => Processor::process($types, Processor::BEFORE_NORMALIZATION))
             ->end()
-            ;
+        ;
     }
 
     private function normalizedConfigTypeKey(string $type): string

@@ -6,9 +6,10 @@ namespace Overblog\GraphQL\Bundle\ConfigurationSdlBundle\ASTConverter;
 
 use GraphQL\Language\AST\Node;
 use GraphQL\Language\AST\StringValueNode;
+
 use function trim;
 
-class Description
+final class Description
 {
     public static function get(Node $node): ?string
     {

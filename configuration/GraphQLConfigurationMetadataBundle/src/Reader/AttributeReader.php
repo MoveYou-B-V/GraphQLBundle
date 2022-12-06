@@ -11,7 +11,7 @@ use ReflectionMethod;
 use ReflectionProperty;
 use Reflector;
 
-class AttributeReader implements MetadataReaderInterface
+final class AttributeReader implements MetadataReaderInterface
 {
     const METADATA_FORMAT = '#[%s]';
 
@@ -29,7 +29,9 @@ class AttributeReader implements MetadataReaderInterface
             case $reflector instanceof ReflectionMethod:
             case $reflector instanceof ReflectionProperty:
             case $reflector instanceof ReflectionClassConstant:
-                $attributes = $reflector->getAttributes();
+                if (is_callable([$reflector, 'getAttributes'])) {
+                    $attributes = $reflector->getAttributes();
+                }
         }
 
         // @phpstan-ignore-next-line

@@ -6,10 +6,10 @@ namespace Overblog\GraphQLBundle\Generator;
 
 use GraphQL\Language\AST\NodeKind;
 use GraphQL\Language\Parser;
-use GraphQL\Type\Definition\EnumType;
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\UnionType;
 use Murtukov\PHPCodeGenerator\ArrowFunction;
@@ -35,8 +35,10 @@ use Overblog\GraphQLBundle\Configuration\TypeConfiguration;
 use Overblog\GraphQLBundle\Configuration\UnionConfiguration;
 use Overblog\GraphQLBundle\Definition\ConfigProcessor;
 use Overblog\GraphQLBundle\Definition\GraphQLServices;
+use Overblog\GraphQLBundle\Definition\Resolver\AliasedInterface;
 use Overblog\GraphQLBundle\Definition\Type\CustomScalarType;
 use Overblog\GraphQLBundle\Definition\Type\GeneratedTypeInterface;
+use Overblog\GraphQLBundle\Definition\Type\PhpEnumType;
 use Overblog\GraphQLBundle\Error\ResolveErrors;
 use Overblog\GraphQLBundle\ExpressionLanguage\ExpressionLanguage as EL;
 use Overblog\GraphQLBundle\Extension\Access\AccessExtension;
@@ -46,6 +48,7 @@ use Overblog\GraphQLBundle\Extension\Validation\ValidationGroupsExtension;
 use Overblog\GraphQLBundle\Generator\Converter\ExpressionConverter;
 use Overblog\GraphQLBundle\Generator\Exception\GeneratorException;
 use Overblog\GraphQLBundle\Validator\InputValidator;
+
 use function array_map;
 use function class_exists;
 use function explode;
@@ -57,8 +60,6 @@ use function key;
 use function ltrim;
 use function reset;
 use function rtrim;
-use function strpos;
-use function strrchr;
 use function strtolower;
 use function substr;
 
@@ -73,27 +74,27 @@ use function substr;
  *
  * Every method with prefix 'build' has a render example in it's PHPDoc.
  */
-class TypeBuilder
+final class TypeBuilder
 {
-    protected const CONSTRAINTS_NAMESPACE = 'Symfony\Component\Validator\Constraints';
-    protected const DOCBLOCK_TEXT = 'THIS FILE WAS GENERATED AND SHOULD NOT BE EDITED MANUALLY.';
-    protected const BUILT_IN_TYPES = [Type::STRING, Type::INT, Type::FLOAT, Type::BOOLEAN, Type::ID];
+    private const CONSTRAINTS_NAMESPACE = 'Symfony\Component\Validator\Constraints';
+    private const DOCBLOCK_TEXT = 'THIS FILE WAS GENERATED AND SHOULD NOT BE EDITED MANUALLY.';
+    private const BUILT_IN_TYPES = [Type::STRING, Type::INT, Type::FLOAT, Type::BOOLEAN, Type::ID];
 
-    protected const EXTENDS = [
+    private const EXTENDS = [
         TypeConfiguration::TYPE_OBJECT => ObjectType::class,
         TypeConfiguration::TYPE_INPUT => InputObjectType::class,
         TypeConfiguration::TYPE_INTERFACE => InterfaceType::class,
         TypeConfiguration::TYPE_UNION => UnionType::class,
-        TypeConfiguration::TYPE_ENUM => EnumType::class,
+        TypeConfiguration::TYPE_ENUM => PhpEnumType::class,
         TypeConfiguration::TYPE_SCALAR => CustomScalarType::class,
     ];
 
-    protected ExpressionConverter $expressionConverter;
-    protected PhpFile $file;
-    protected string $namespace;
-    protected RootTypeConfiguration $typeConfiguration;
-    protected string $currentField;
-    protected string $gqlServices = '$'.TypeGenerator::GRAPHQL_SERVICES;
+    private ExpressionConverter $expressionConverter;
+    private PhpFile $file;
+    private string $namespace;
+    private RootTypeConfiguration $typeConfiguration;
+    private string $currentField;
+    private string $gqlServices = '$'.TypeGenerator::GRAPHQL_SERVICES;
 
     public function __construct(ExpressionConverter $expressionConverter, string $namespace)
     {
@@ -132,7 +133,7 @@ class TypeBuilder
         $class = $this->file->createClass($config->getClassName())
             ->setFinal()
             ->setExtends(static::EXTENDS[$config->getGraphQLType()])
-            ->addImplements(GeneratedTypeInterface::class)
+            ->addImplements(GeneratedTypeInterface::class, AliasedInterface::class)
             ->addConst('NAME', $config->getPublicName() ?? $config->getName())
             ->setDocBlock(static::DOCBLOCK_TEXT);
 
@@ -144,6 +145,12 @@ class TypeBuilder
             ->append('$config = ', $this->buildConfig($config))
             ->emptyLine()
             ->append('parent::__construct($configProcessor->process($config))');
+
+        $class->createMethod('getAliases', 'public')
+            ->setStatic()
+            ->setReturnType('array')
+            ->setDocBlock('{@inheritdoc}')
+            ->append('return [self::NAME]');
 
         return $this->file;
     }
@@ -162,7 +169,7 @@ class TypeBuilder
      *
      * @return GeneratorInterface|string
      */
-    protected function buildType(string $typeDefinition)
+    private function buildType(string $typeDefinition)
     {
         $typeNode = Parser::parseType($typeDefinition);
 
@@ -185,7 +192,7 @@ class TypeBuilder
      *
      * @return Literal|string
      */
-    protected function wrapTypeRecursive($typeNode, bool &$isReference)
+    private function wrapTypeRecursive($typeNode, bool &$isReference)
     {
         switch ($typeNode->kind) {
             case NodeKind::NON_NULL_TYPE:
@@ -298,7 +305,7 @@ class TypeBuilder
      *
      * @throws GeneratorException
      */
-    protected function buildConfig(RootTypeConfiguration $config): Collection
+    private function buildConfig(RootTypeConfiguration $config): Collection
     {
         $configLoader = Collection::assoc();
         $configLoader->addItem('name', new Literal('self::NAME'));
@@ -351,10 +358,18 @@ class TypeBuilder
             }
         }
 
+        // TODO fix resolving of the merge conflict. Check is there getter for the property `isTypeOf`
+        if (isset($config->isTypeOf)) {
+            $configLoader->addItem('isTypeOf', $this->buildIsTypeOf($config->isTypeOf));
+        }
+
         // Enum (values)
         if ($config instanceof EnumConfiguration && !empty($config->getValues())) {
             $values = array_map(fn (EnumValueConfiguration $conf) => $conf->toArray(), $config->getValues(true));
             $configLoader->addItem('values', Collection::assoc($values));
+        }
+        if (isset($c->enumClass)) {
+            $configLoader->addItem('enumClass', $c->enumClass);
         }
 
         // Scalar
@@ -388,11 +403,11 @@ class TypeBuilder
      *
      * @param callable $callback - a callable string or a callable array
      *
-     * @throws GeneratorException
-     *
      * @return ArrowFunction
+     *
+     * @throws GeneratorException
      */
-    protected function buildScalarCallback($callback, string $fieldName)
+    private function buildScalarCallback($callback, string $fieldName)
     {
         if (!is_callable($callback)) {
             throw new GeneratorException("Value of '$fieldName' is not callable.");
@@ -459,10 +474,8 @@ class TypeBuilder
      * @param mixed $resolve
      *
      * @throws GeneratorException
-     *
-     * @return GeneratorInterface|string
      */
-    protected function buildResolve($resolve, ?array $groups = null)
+    private function buildResolve($resolve, ?array $groups = null): GeneratorInterface
     {
         if (is_callable($resolve) && is_array($resolve)) {
             return Collection::numeric($resolve);
@@ -557,7 +570,7 @@ class TypeBuilder
      *
      * @throws GeneratorException
      */
-    protected function buildValidationRules(array $config): GeneratorInterface
+    private function buildValidationRules(array $config): GeneratorInterface
     {
         // Convert to object for better readability
         $c = (object) $config;
@@ -565,7 +578,7 @@ class TypeBuilder
         $array = Collection::assoc();
 
         if (!empty($c->link)) {
-            if (false === strpos($c->link, '::')) {
+            if (!str_contains($c->link, '::')) {
                 // e.g. App\Entity\Droid
                 $array->addItem('link', $c->link);
             } else {
@@ -621,11 +634,11 @@ class TypeBuilder
      *          ...
      *      ]
      *
-     * @throws GeneratorException
-     *
      * @return ArrowFunction|Collection
+     *
+     * @throws GeneratorException
      */
-    protected function buildConstraints(array $constraints = [], bool $inClosure = true)
+    private function buildConstraints(array $constraints = [], bool $inClosure = true)
     {
         $result = Collection::numeric()->setMultiline();
 
@@ -633,27 +646,40 @@ class TypeBuilder
             $name = key($wrapper);
             $args = reset($wrapper);
 
-            if (false !== strpos($name, '\\')) {
+            if (str_contains($name, '\\')) {
                 // Custom constraint
                 $fqcn = ltrim($name, '\\');
-                $name = ltrim(strrchr($name, '\\'), '\\');
-                $this->file->addUse($fqcn);
+                $instance = Instance::new("@\\$fqcn");
             } else {
                 // Symfony constraint
-                $this->file->addUseGroup(static::CONSTRAINTS_NAMESPACE, $name);
                 $fqcn = static::CONSTRAINTS_NAMESPACE."\\$name";
+                $this->file->addUse(static::CONSTRAINTS_NAMESPACE.' as SymfonyConstraints');
+                $instance = Instance::new("@SymfonyConstraints\\$name");
             }
 
             if (!class_exists($fqcn)) {
                 throw new GeneratorException("Constraint class '$fqcn' doesn't exist.");
             }
 
-            $instance = Instance::new($name);
-
             if (is_array($args)) {
                 if (isset($args[0]) && is_array($args[0])) {
                     // Nested instance
                     $instance->addArgument($this->buildConstraints($args, false));
+                } elseif (isset($args['constraints'][0]) && is_array($args['constraints'][0])) {
+                    // Nested instance with "constraints" key (full syntax)
+                    $options = [
+                        'constraints' => $this->buildConstraints($args['constraints'], false),
+                    ];
+
+                    // Check for additional options
+                    foreach ($args as $key => $option) {
+                        if ('constraints' === $key) {
+                            continue;
+                        }
+                        $options[$key] = $option;
+                    }
+
+                    $instance->addArgument($options);
                 } else {
                     // Numeric or Assoc array?
                     $instance->addArgument(isset($args[0]) ? $args : Collection::assoc($args));
@@ -700,13 +726,20 @@ class TypeBuilder
      *
      * @internal
      *
-     * @throws GeneratorException
-     *
      * @return GeneratorInterface|Collection|string
+     *
+     * @throws GeneratorException
      */
     public function buildField(TypeConfiguration $fieldConfig, string $fieldname)
     {
         $this->currentField = $fieldname;
+
+        // TODO(any): modify `InputValidator` and `TypeDecoratorListener` to support it before re-enabling this
+        // see https://github.com/overblog/GraphQLBundle/issues/973
+        // If there is only 'type', use shorthand
+        /*if (1 === count($fieldConfig) && isset($c->type)) {
+            return $this->buildType($c->type);
+        }*/
 
         $field = Collection::assoc()
             ->addItem('type', $this->buildType($fieldConfig->getType()));
@@ -827,7 +860,7 @@ class TypeBuilder
      *
      * @return Closure|mixed
      */
-    protected function buildComplexity($complexity)
+    private function buildComplexity($complexity)
     {
         if (EL::isStringWithTrigger($complexity)) {
             $expression = $this->expressionConverter->convert($complexity);
@@ -866,7 +899,7 @@ class TypeBuilder
      *
      * @return ArrowFunction|mixed
      */
-    protected function buildPublic($public)
+    private function buildPublic($public)
     {
         if (EL::isStringWithTrigger($public)) {
             $expression = $this->expressionConverter->convert($public);
@@ -899,7 +932,7 @@ class TypeBuilder
      *
      * @return ArrowFunction|mixed
      */
-    protected function buildAccess($access)
+    private function buildAccess($access)
     {
         if (EL::isStringWithTrigger($access)) {
             $expression = $this->expressionConverter->convert($access);
@@ -924,7 +957,7 @@ class TypeBuilder
      *
      * @return mixed|ArrowFunction
      */
-    protected function buildResolveType($resolveType)
+    private function buildResolveType($resolveType)
     {
         if (EL::isStringWithTrigger($resolveType)) {
             $expression = $this->expressionConverter->convert($resolveType);
@@ -938,6 +971,30 @@ class TypeBuilder
     }
 
     /**
+     * Builds an arrow function from a string with an expression prefix,
+     * otherwise just returns the provided value back untouched.
+     *
+     * Render example:
+     *
+     *      fn($className) => (($className = "App\\ClassName") && $value instanceof $className)
+     *
+     * @param mixed $isTypeOf
+     */
+    private function buildIsTypeOf($isTypeOf): ArrowFunction
+    {
+        if (EL::isStringWithTrigger($isTypeOf)) {
+            $expression = $this->expressionConverter->convert($isTypeOf);
+
+            return ArrowFunction::new(Literal::new($expression), 'bool')
+                ->setStatic()
+                ->addArguments('value', 'context')
+                ->addArgument('info', ResolveInfo::class);
+        }
+
+        return ArrowFunction::new($isTypeOf);
+    }
+
+    /**
      * Creates and array from a formatted string.
      *
      * Examples:
@@ -946,7 +1003,7 @@ class TypeBuilder
      *      "App\Entity\User::firstName()" -> ['App\Entity\User', 'firstName', 'getter']
      *      "App\Entity\User::firstName"   -> ['App\Entity\User', 'firstName', 'member']
      */
-    protected function normalizeLink(string $link): array
+    private function normalizeLink(string $link): array
     {
         [$fqcn, $classMember] = explode('::', $link);
 

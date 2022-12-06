@@ -15,12 +15,12 @@ use Overblog\GraphQLBundle\Configuration\Configuration;
 use Overblog\GraphQLBundle\ConfigurationProvider\ConfigurationFilesParser;
 use SplFileInfo;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+
 use function array_keys;
 use function array_pop;
 use function call_user_func;
 use function explode;
 use function file_get_contents;
-use function get_class;
 use function in_array;
 use function preg_replace;
 use function sprintf;
@@ -64,7 +64,7 @@ class ConfigurationSdlParser extends ConfigurationFilesParser
 
     protected function parseFile(SplFileInfo $file): array
     {
-        $content = trim(file_get_contents($file->getPathname()));
+        $content = trim((string) file_get_contents($file->getPathname()));
         $typesConfig = [];
 
         // allow empty files
@@ -82,9 +82,17 @@ class ConfigurationSdlParser extends ConfigurationFilesParser
              * @var ObjectTypeDefinitionNode|InputObjectTypeDefinitionNode|EnumTypeDefinitionNode $typeDef
              */
             if (isset($typeDef->kind) && in_array($typeDef->kind, array_keys(self::DEFINITION_TYPE_MAPPING))) {
+                /**
+                 * @var class-string $class
+                 */
                 $class = sprintf('\\%s\\ASTConverter\\%sNode', __NAMESPACE__, ucfirst(self::DEFINITION_TYPE_MAPPING[$typeDef->kind]));
-                $typeConfiguration = call_user_func([$class, 'toConfiguration'], $typeDef->name->value, $typeDef);
-                $this->configuration->addType($typeConfiguration);
+                $astConverterCallable = [$class, 'toConfiguration'];
+                if (is_callable($astConverterCallable)) {
+                    $typeConfiguration = call_user_func($astConverterCallable, $typeDef->name->value, $typeDef);
+                    $this->configuration->addType($typeConfiguration);
+                } else {
+                    self::throwUnsupportedDefinitionNode($typeDef);
+                }
             } else {
                 self::throwUnsupportedDefinitionNode($typeDef);
             }
@@ -95,7 +103,7 @@ class ConfigurationSdlParser extends ConfigurationFilesParser
 
     private static function throwUnsupportedDefinitionNode(DefinitionNode $typeDef): void
     {
-        $path = explode('\\', get_class($typeDef));
+        $path = explode('\\', $typeDef::class);
         throw new InvalidArgumentException(
             sprintf(
                 '%s definition is not supported right now.',

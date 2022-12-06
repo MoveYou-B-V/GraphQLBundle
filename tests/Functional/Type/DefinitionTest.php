@@ -9,7 +9,7 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Overblog\GraphQLBundle\Tests\Functional\TestCase;
 
-class DefinitionTest extends TestCase
+final class DefinitionTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -23,10 +23,10 @@ class DefinitionTest extends TestCase
         /** @var EnumType $enumTypeWithDeprecatedValue */
         $enumTypeWithDeprecatedValue = $this->getType('EnumWithDeprecatedValue');
         $value = $enumTypeWithDeprecatedValue->getValues()[0];
-        $this->assertSame([
-            'name' => 'foo',
+        $this->assertSame([ // @phpstan-ignore-line
             'deprecationReason' => 'Just because',
             'value' => 'foo',
+            'name' => 'foo',
         ], $value->config);
         $this->assertTrue($value->isDeprecated());
     }

@@ -6,7 +6,7 @@ namespace Overblog\GraphQL\Bundle\ConfigurationYamlBundle\Definition;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
-class UnionTypeDefinition extends TypeDefinition
+final class UnionTypeDefinition extends TypeDefinition
 {
     public function getDefinition(): ArrayNodeDefinition
     {

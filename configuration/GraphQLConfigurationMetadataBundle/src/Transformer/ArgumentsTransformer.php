@@ -10,11 +10,14 @@ use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\NonNull;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+// TODO check merge conflict solving
+use Overblog\GraphQLBundle\Definition\Type\PhpEnumType;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 use function array_map;
 use function count;
 use function is_array;
@@ -23,12 +26,12 @@ use function sprintf;
 use function strlen;
 use function substr;
 
-class ArgumentsTransformer
+final class ArgumentsTransformer
 {
-    protected PropertyAccessor $accessor;
-    protected ?ValidatorInterface $validator;
-    protected array $classesMap;
-    protected ClassesTypesMap $classesTypesMap;
+    private PropertyAccessor $accessor;
+    private ?ValidatorInterface $validator;
+    private array $classesMap;
+    private ClassesTypesMap $classesTypesMap;
 
     public function __construct(ValidatorInterface $validator = null, ClassesTypesMap $classesTypesMap)
     {
@@ -81,6 +84,10 @@ class ArgumentsTransformer
         }
 
         if ($type instanceof EnumType) {
+            /** Enum based on PHP Enum are already processed by PhpEnumType */
+            if ($type instanceof PhpEnumType && $type->isEnumPhp()) { /** @phpstan-ignore-line */
+                return $data;
+            }
             $instance = $this->getTypeClassInstance($type->name);
             if ($instance) {
                 $this->accessor->setValue($instance, 'value', $data);

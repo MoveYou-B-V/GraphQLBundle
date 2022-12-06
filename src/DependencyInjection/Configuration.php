@@ -18,14 +18,15 @@ use Symfony\Component\Config\Definition\Builder\EnumNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\HttpKernel\Kernel;
+
+use function array_keys;
 use function is_array;
 use function is_int;
 use function is_numeric;
 use function is_string;
 use function sprintf;
 
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
     public const NAME = 'overblog_graphql';
 
@@ -123,7 +124,6 @@ class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('argument_class')->defaultValue(Argument::class)->end()
-                ->scalarNode('use_experimental_executor')->defaultFalse()->end()
                 ->scalarNode('default_field_resolver')->defaultValue(FieldResolver::class)->end()
                 ->scalarNode('class_namespace')->defaultValue('Overblog\\GraphQLBundle\\__DEFINITIONS__')->end()
                 ->scalarNode('cache_dir')->defaultNull()->end()
@@ -203,16 +203,6 @@ class Configuration implements ConfigurationInterface
         /** @var ArrayNodeDefinition $node */
         $node = $builder->getRootNode();
 
-        if (Kernel::VERSION_ID >= 50100) {
-            $deprecatedArgs = [
-                'overblog/graphql-bundle',
-                '0.13',
-                'The "%path%.%node%" configuration is deprecated and will be removed in 1.0. Add the "overblog_graphql.resolver_map" tag to the services instead.',
-            ];
-        } else {
-            $deprecatedArgs = ['The "%path%.%node%" configuration is deprecated since version 0.13 and will be removed in 1.0. Add the "overblog_graphql.resolver_map" tag to the services instead.'];
-        }
-
         // @phpstan-ignore-next-line
         $node
             ->beforeNormalization()
@@ -226,11 +216,6 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('query')->defaultNull()->end()
                     ->scalarNode('mutation')->defaultNull()->end()
                     ->scalarNode('subscription')->defaultNull()->end()
-                    ->arrayNode('resolver_maps')
-                        ->defaultValue([])
-                        ->prototype('scalar')->end()
-                        ->setDeprecated(...$deprecatedArgs)
-                    ->end()
                     ->arrayNode('types')
                         ->defaultValue([])
                         ->prototype('scalar')->end()

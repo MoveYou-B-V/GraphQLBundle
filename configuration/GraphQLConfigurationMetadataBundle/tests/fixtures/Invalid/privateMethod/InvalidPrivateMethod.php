@@ -10,13 +10,13 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
  * @GQL\Type
  */
 #[GQL\Type]
-class InvalidPrivateMethod
+final class InvalidPrivateMethod
 {
     /**
      * @GQL\Field
      */
     #[GQL\Field]
-    protected function gql(): string
+    private function gql(): string
     {
         return 'invalid';
     }
