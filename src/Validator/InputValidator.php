@@ -176,6 +176,9 @@ class InputValidator
 
                         // Get metadata from the property and it's getters
                         $propertyMetadata = $this->cachedMetadata[$fqcn]->getPropertyMetadata($property);
+                        // TODO: consider throwing of exception when variable $propertyMetadata is empty!
+                        //       It looks like inconsistent requirements when configured validation link
+                        //       but we cannot load any constraint.
 
                         foreach ($propertyMetadata as $memberMetadata) {
                             // Allow only constraints specified by the "link" matcher
