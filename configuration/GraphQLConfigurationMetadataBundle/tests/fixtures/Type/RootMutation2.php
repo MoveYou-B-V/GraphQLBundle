@@ -10,6 +10,6 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
  * @GQL\Type
  */
 #[GQL\Type]
-class RootMutation2
+final class RootMutation2
 {
 }
