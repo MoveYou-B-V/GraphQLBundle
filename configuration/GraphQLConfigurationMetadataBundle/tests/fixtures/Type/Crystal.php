@@ -11,12 +11,12 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
  * @GQL\FieldsBuilder(name="MyFieldsBuilder", configuration={"param1": "val1"})
  */
 #[GQL\Type]
-#[GQL\FieldsBuilder(name: "MyFieldsBuilder", configuration: ["param1" => "val1"])]
-class Crystal
+#[GQL\FieldsBuilder(name: 'MyFieldsBuilder', configuration: ['param1' => 'val1'])]
+final class Crystal
 {
     /**
      * @GQL\Field(type="String!")
      */
-    #[GQL\Field(type: "String!")]
-    protected string $color;
+    #[GQL\Field(type: 'String!')]
+    public string $color;
 }
