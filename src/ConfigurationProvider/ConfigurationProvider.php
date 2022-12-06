@@ -17,7 +17,7 @@ class ConfigurationProvider
 {
     protected ValidatorInterface $validator;
     protected EventDispatcherInterface $eventDispatcher;
-    protected ExtensionRegistry $extensionRegistry;
+    protected ExtensionRegistry $extensionsRegistry;
 
     /** @var ConfigurationProviderInterface[] */
     protected iterable $providers = [];
