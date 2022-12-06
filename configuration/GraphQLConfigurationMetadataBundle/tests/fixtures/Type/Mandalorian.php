@@ -11,6 +11,6 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Union\Kil
  * @GQL\Type
  */
 #[GQL\Type]
-class Mandalorian extends Character implements Killable, Armored
+final class Mandalorian extends Character implements Killable, Armored
 {
 }
