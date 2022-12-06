@@ -12,6 +12,10 @@ use Overblog\GraphQLBundle\Configuration\TypeConfiguration;
 use ReflectionClass;
 use ReflectionClassConstant;
 
+/**
+ * TODO: check if there is necessary to transfer handling of PHP 8 enum
+ *       from the removed \Overblog\GraphQLBundle\Config\Parser\MetadataParser\MetadataParser
+ */
 class EnumHandler extends MetadataHandler
 {
     const TYPE = TypeConfiguration::TYPE_ENUM;
