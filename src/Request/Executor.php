@@ -30,6 +30,9 @@ class Executor
 {
     public const PROMISE_ADAPTER_SERVICE_ID = 'overblog_graphql.promise_adapter';
 
+    /**
+     * @var array<string,mixed>
+     */
     private array $schemas = [];
     private EventDispatcherInterface $dispatcher;
     private PromiseAdapter $promiseAdapter;
