@@ -19,7 +19,6 @@ final class IsPublic extends Extension
 {
     public function __construct(string $expression)
     {
-        $this->name = IsPublicExtension::ALIAS;
-        $this->configuration = $expression;
+        parent::__construct(IsPublicExtension::ALIAS, $expression);
     }
 }
