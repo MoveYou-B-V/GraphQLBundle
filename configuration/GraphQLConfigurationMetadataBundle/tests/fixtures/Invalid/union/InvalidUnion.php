@@ -9,7 +9,7 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
 /**
  * @GQL\Union(types={"Hero", "Droid", "Sith"})
  */
-#[GQL\Union(types: ["Hero", "Droid", "Sith"])]
-class InvalidUnion
+#[GQL\Union(types: ['Hero', 'Droid', 'Sith'])]
+final class InvalidUnion
 {
 }
