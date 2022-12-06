@@ -68,7 +68,6 @@ final class OverblogGraphQLExtension extends Extension
 
         $container->setParameter($this->getAlias().'.schemas', array_keys($config['definitions']['schema']));
         $container->setParameter($this->getAlias().'.config', $config);
-        $container->setParameter($this->getAlias().'.schemas', $config['definitions']['schema']);
         $container->setParameter($this->getAlias().'.resources_dir', realpath(__DIR__.'/../Resources'));
     }
 
