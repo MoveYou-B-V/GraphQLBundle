@@ -27,6 +27,9 @@ final class TypeInterface extends Metadata
     public string $typeResolver;
 
     /**
+     * FIXME: parameters with default value MUST be after parameters without default values.
+     * @see https://www.php.net/manual/en/functions.arguments.php#functions.arguments.default Example #7 Incorrect usage of default function arguments
+     *
      * @param string|null $name         The GraphQL name of the interface
      * @param string      $typeResolver The express resolve type
      */
