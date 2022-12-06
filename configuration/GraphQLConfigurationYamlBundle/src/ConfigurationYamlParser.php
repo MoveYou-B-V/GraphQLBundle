@@ -9,6 +9,9 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
+
+use function file_get_contents;
+use function is_array;
 use function sprintf;
 
 class ConfigurationYamlParser extends ConfigurationParser
