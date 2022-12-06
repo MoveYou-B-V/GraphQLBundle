@@ -63,12 +63,12 @@ class PhpEnumType extends EnumType
                 $enumDefinitions[$case->getName()] = ['value' => $case->getName()];
             }
 
-            foreach ($configValues as $name => $config) {
+            foreach ($configValues as $name => $configValue) {
                 if (!isset($enumDefinitions[$name])) {
                     throw new Error("Enum value {$name} is not defined in {$this->enumClass}");
                 }
-                $enumDefinitions[$name]['description'] = $config['description'] ?? null;
-                $enumDefinitions[$name]['deprecationReason'] = $config['deprecationReason'] ?? null;
+                $enumDefinitions[$name]['description'] = $configValue['description'] ?? null;
+                $enumDefinitions[$name]['deprecationReason'] = $configValue['deprecationReason'] ?? null;
             }
 
             $this->config['values'] = $enumDefinitions;
