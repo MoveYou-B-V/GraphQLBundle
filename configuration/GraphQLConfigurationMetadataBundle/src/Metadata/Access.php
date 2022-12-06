@@ -19,7 +19,6 @@ final class Access extends Extension
 {
     public function __construct(string $expression)
     {
-        $this->name = AccessExtension::ALIAS;
-        $this->configuration = $expression;
+        parent::__construct(AccessExtension::ALIAS, $expression);
     }
 }
