@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Overblog\GraphQLBundle\Tests\Config\Parser\fixtures\annotations\Enum;
+namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\Config\Parser\fixtures\annotations\Enum;
 
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata as GQL;
 
