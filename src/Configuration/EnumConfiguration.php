@@ -7,7 +7,7 @@ namespace Overblog\GraphQLBundle\Configuration;
 class EnumConfiguration extends RootTypeConfiguration
 {
     /** @var EnumValueConfiguration[] */
-    protected array $values;
+    protected array $values = [];
 
     public function __construct(string $name, array $values = [])
     {
