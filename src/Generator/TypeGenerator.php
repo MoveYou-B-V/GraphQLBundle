@@ -56,11 +56,10 @@ final class TypeGenerator
 
         // Generate classes
         $classes = [];
-        $classes = [];
         foreach ($this->configuration->getTypes() as $typeConfiguration) {
-            $classMap = $this->generateClass($typeConfiguration, $cacheDir, $mode);
-            $classes = array_merge($classes, $classMap);
+            $classes[] = $this->generateClass($typeConfiguration, $cacheDir, $mode);
         }
+        $classes = array_merge(...$classes);
 
         // Create class map file
         if ($writeMode && $this->options->useClassMap && count($classes) > 0) {
