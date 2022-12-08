@@ -6,6 +6,7 @@ namespace Overblog\GraphQLBundle\Configuration;
 
 class EnumConfiguration extends RootTypeConfiguration
 {
+    protected ?string $enumClass = null;
     /** @var EnumValueConfiguration[] */
     protected array $values = [];
 
@@ -25,6 +26,16 @@ class EnumConfiguration extends RootTypeConfiguration
     public function getGraphQLType(): string
     {
         return self::TYPE_ENUM;
+    }
+
+    public function getEnumClass(): ?string
+    {
+        return $this->enumClass;
+    }
+
+    public function setEnumClass(?string $enumClass): void
+    {
+        $this->enumClass = $enumClass;
     }
 
     public function addValue(EnumValueConfiguration $value): self

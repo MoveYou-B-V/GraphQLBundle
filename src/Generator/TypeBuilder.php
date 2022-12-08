@@ -363,12 +363,15 @@ final class TypeBuilder
         }
 
         // Enum (values)
-        if ($config instanceof EnumConfiguration && !empty($config->getValues())) {
-            $values = array_map(fn (EnumValueConfiguration $conf) => $conf->toArray(), $config->getValues(true));
-            $configLoader->addItem('values', Collection::assoc($values));
-        }
-        if (isset($c->enumClass)) { // TODO fix resolving of the merge conflict.
-            $configLoader->addItem('enumClass', $c->enumClass);
+        if ($config instanceof EnumConfiguration) {
+            if ($enumClass = $config->getEnumClass()) {
+                // TODO consider checking if class exists
+                $configLoader->addItem('enumClass', $enumClass);
+            }
+            if (!empty($config->getValues())) {
+                $values = array_map(fn (EnumValueConfiguration $conf) => $conf->toArray(), $config->getValues(true));
+                $configLoader->addItem('values', Collection::assoc($values));
+            }
         }
 
         // Scalar

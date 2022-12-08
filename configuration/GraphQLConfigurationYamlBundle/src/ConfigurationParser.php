@@ -179,6 +179,9 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                 break;
             case TypesConfiguration::TYPE_ENUM:
                 $typeConfiguration = new EnumConfiguration($name);
+                if (isset($config['enumClass'])) {
+                    $typeConfiguration->setEnumClass($config['enumClass']);
+                }
                 foreach ($config['values'] as $name => $valueConfig) {
                     $valueConfiguration = new EnumValueConfiguration($name, $valueConfig['value']);
                     $this->setCommonProperties($valueConfiguration, $valueConfig);

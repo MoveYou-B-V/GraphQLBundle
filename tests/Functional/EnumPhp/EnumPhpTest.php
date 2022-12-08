@@ -31,12 +31,23 @@ final class EnumPhpTest extends TestCase
         $query = 'query { enum }';
         $result = $this->executeGraphQLRequest($query);
 
-        $this->assertEquals($result['data']['enum'], EnumPhp::VALUE2->name);
+        self::assertIsArray($result);
+        self::assertArrayNotHasKey('errors', $result, json_encode($result, JSON_THROW_ON_ERROR));
+        self::assertArrayHasKey('data', $result);
+        self::assertArrayHasKey('enum', $result['data']);
+        self::assertEquals(EnumPhp::VALUE2->name, $result['data']['enum']);
+    }
 
+    public function testEnumBackedSerializedToName(): void
+    {
         $query = 'query { enumBacked }';
         $result = $this->executeGraphQLRequest($query);
 
-        $this->assertEquals($result['data']['enumBacked'], EnumPhpBacked::VALUE3->name);
+        self::assertIsArray($result);
+        self::assertArrayNotHasKey('errors', $result, json_encode($result, JSON_THROW_ON_ERROR));
+        self::assertArrayHasKey('data', $result);
+        self::assertArrayHasKey('enumBacked', $result['data']);
+        self::assertEquals(EnumPhpBacked::VALUE3->name, $result['data']['enumBacked']);
     }
 
     public static function resolveQueryEnumAsInput(mixed $enumParam = null, mixed $enumParam2 = null): string
@@ -49,7 +60,11 @@ final class EnumPhpTest extends TestCase
         $query = 'query { enumParser(enum: VALUE2, enumBacked: VALUE3) }';
 
         $result = $this->executeGraphQLRequest($query);
-        $this->assertEquals($result['data']['enumParser'], 'OK');
+        self::assertIsArray($result);
+        self::assertArrayNotHasKey('errors', $result, json_encode($result, JSON_THROW_ON_ERROR));
+        self::assertArrayHasKey('data', $result);
+        self::assertArrayHasKey('enumParser', $result['data']);
+        self::assertEquals('OK', $result['data']['enumParser']);
     }
 
     public function testEnumVariableParsedAsPhpEnum(): void
@@ -57,7 +72,11 @@ final class EnumPhpTest extends TestCase
         $query = 'query($enum: EnumPhp!, $enumBacked: EnumPhpBacked!) { enumParser(enum: $enum, enumBacked: $enumBacked) }';
         $result = $this->executeGraphQLRequest($query, [], null, ['enum' => EnumPhp::VALUE2->name, 'enumBacked' => EnumPhpBacked::VALUE3->name]);
 
-        $this->assertEquals($result['data']['enumParser'], 'OK');
+        self::assertIsArray($result);
+        self::assertArrayNotHasKey('errors', $result, json_encode($result, JSON_THROW_ON_ERROR));
+        self::assertArrayHasKey('data', $result);
+        self::assertArrayHasKey('enumParser', $result['data']);
+        self::assertEquals('OK', $result['data']['enumParser']);
     }
 
     public function testEnumIntrospection(): void
