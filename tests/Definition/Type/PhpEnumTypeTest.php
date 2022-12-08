@@ -9,7 +9,7 @@ use GraphQL\Error\SerializationError;
 use GraphQL\Language\AST\EnumValueNode;
 use GraphQL\Language\AST\StringValueNode;
 use Overblog\GraphQLBundle\Definition\Type\PhpEnumType;
-use Overblog\GraphQLBundle\Tests\Config\Parser\fixtures\annotations\Enum\Color;
+use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Enum\Color;
 use PHPUnit\Framework\TestCase;
 
 use function sprintf;
@@ -34,9 +34,7 @@ final class PhpEnumTypeTest extends TestCase
     public function testInvalidEnumValueConfig(): void
     {
         $this->expectException(Error::class);
-        $this->expectExceptionMessage(
-            'Enum value A is not defined in Overblog\GraphQLBundle\Tests\Config\Parser\fixtures\annotations\Enum\Color',
-        );
+        $this->expectExceptionMessage(sprintf('Enum value A is not defined in %s', Color::class),);
         new PhpEnumType([
             'name' => 'MyEnum',
             'enumClass' => Color::class,
@@ -59,7 +57,8 @@ final class PhpEnumTypeTest extends TestCase
         $invalidValue = 'invalidValue';
         $this->expectException(Error::class);
         $this->expectExceptionMessage(sprintf(
-            'Cannot represent enum of class Overblog\GraphQLBundle\Tests\Config\Parser\fixtures\annotations\Enum\Color from value %s',
+            'Cannot represent enum of class %s from value %s',
+            Color::class,
             $invalidValue
         ));
 
@@ -75,7 +74,8 @@ final class PhpEnumTypeTest extends TestCase
     {
         $this->expectException(SerializationError::class);
         $this->expectExceptionMessage(sprintf(
-            'Cannot serialize value Overblog\GraphQLBundle\Tests\Definition\Type\PhpEnumTypeTest as it must be an instance of enum',
+            'Cannot serialize value "%s" as it must be an instance of enum',
+            __CLASS__
         ));
 
         $this->getEnum()->serialize(self::class);
