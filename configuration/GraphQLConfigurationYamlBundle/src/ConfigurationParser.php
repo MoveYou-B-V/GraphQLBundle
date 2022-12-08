@@ -67,7 +67,7 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
             $config[] = $this->parseFile($file);
         }
 
-        $config = [array_merge(...$config)];
+        $config = [array_merge(...$config)]; // TODO: handle duplicates
 
         return (new Processor())->processConfiguration(new TypesConfiguration(), $config);
     }
@@ -75,7 +75,7 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
     /**
      * Transform a type array config into a proper TypeConfiguration
      *
-     * @return Overblog\GraphQLBundle\Configuration\RootTypeConfiguration|null
+     * @param array<string,mixed> $typeConfig
      */
     protected function configArrayToTypeConfiguration(string $name, array $typeConfig): ?RootTypeConfiguration
     {
@@ -92,7 +92,7 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
             case TypesConfiguration::TYPE_OBJECT:
                 $typeConfiguration = $typeConfiguration ?? new ObjectConfiguration($name);
 
-                if (TypesConfiguration::TYPE_OBJECT === $configType && count($config['interfaces']) > 0) {
+                if (count($config['interfaces']) > 0) {
                     $typeConfiguration->setInterfaces($config['interfaces']);
                 }
 
