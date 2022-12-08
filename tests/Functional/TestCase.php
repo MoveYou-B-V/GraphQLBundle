@@ -149,10 +149,10 @@ abstract class TestCase extends WebTestCase
      */
     protected static function sendRequest(KernelBrowser $client, string $query, bool $isDecoded = false, array $variables = null)
     {
-        $client->request('GET', '/', ['query' => $query, 'variables' => json_encode($variables)]);
+        $client->request('GET', '/', ['query' => $query, 'variables' => json_encode($variables, JSON_THROW_ON_ERROR)]);
         $result = $client->getResponse()->getContent();
 
-        return $isDecoded ? json_decode($result, true) : $result;
+        return $isDecoded ? json_decode($result, true, 512, JSON_THROW_ON_ERROR) : $result;
     }
 
     /**
