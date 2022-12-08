@@ -358,9 +358,8 @@ final class TypeBuilder
             }
         }
 
-        // TODO fix resolving of the merge conflict. Check is there getter for the property `isTypeOf`
-        if (isset($config->isTypeOf)) {
-            $configLoader->addItem('isTypeOf', $this->buildIsTypeOf($config->isTypeOf));
+        if (method_exists($config, 'getIsTypeOf') && null !== $config->getIsTypeOf()) {
+            $configLoader->addItem('isTypeOf', $this->buildIsTypeOf($config->getIsTypeOf()));
         }
 
         // Enum (values)
@@ -368,7 +367,7 @@ final class TypeBuilder
             $values = array_map(fn (EnumValueConfiguration $conf) => $conf->toArray(), $config->getValues(true));
             $configLoader->addItem('values', Collection::assoc($values));
         }
-        if (isset($c->enumClass)) {
+        if (isset($c->enumClass)) { // TODO fix resolving of the merge conflict.
             $configLoader->addItem('enumClass', $c->enumClass);
         }
 
