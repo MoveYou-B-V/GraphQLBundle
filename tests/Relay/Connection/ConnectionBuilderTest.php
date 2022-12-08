@@ -269,17 +269,15 @@ final class ConnectionBuilderTest extends AbstractConnectionBuilderTest
         $this->assertSameConnection($expected, $actual);
     }
 
-    public function testReturnsNoElementsIfCursorsCross(): void
+    public function testExceptionThrownIfCursorsCross(): void
     {
-        $actual = call_user_func(
-            [static::getBuilder(), 'connectionFromArray'],
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Arguments "before" and "after" cannot be intersected');
+
+        self::getBuilder()->connectionFromArray(
             $this->letters,
             ['before' => 'YXJyYXljb25uZWN0aW9uOjI=', 'after' => 'YXJyYXljb25uZWN0aW9uOjQ=']
         );
-
-        $expected = $this->getExpectedConnection([], false, false);
-
-        $this->assertSameConnection($expected, $actual);
     }
 
     /**
