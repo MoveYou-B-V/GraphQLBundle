@@ -29,6 +29,8 @@ class OverblogGraphQLConfigurationMetadataExtension extends Extension
 
                 $readerService = 'Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Reader\AttributeReader';
                 break;
+            default:
+                throw new InvalidConfigurationException(sprintf('Invalid attribute metadata reader %s', $config['reader']));
         }
 
         // Set metadata reader alias
