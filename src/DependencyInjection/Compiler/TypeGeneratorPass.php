@@ -30,21 +30,24 @@ final class TypeGeneratorPass implements CompilerPassInterface
         // We construct the TypeGenerator manually so that we don't have to boot the container
         // while we are in compilation phase.
         // See https://github.com/overblog/GraphQLBundle/issues/899
-        $typeGenerator = new TypeGenerator(
-            $container->getParameter('overblog_graphql_types.config'),
-            new TypeBuilder(
-                new ExpressionConverter(new ExpressionLanguage()),
-                $container->getParameter('overblog_graphql.class_namespace')
-            ),
-            new EventDispatcher(),
-            new TypeGeneratorOptions(
-                $container->getParameter('overblog_graphql.class_namespace'),
-                $container->getParameter('overblog_graphql.cache_dir'),
-                $container->getParameter('overblog_graphql.use_classloader_listener'),
-                $container->getParameter('kernel.cache_dir'),
-                $container->getParameter('overblog_graphql.cache_dir_permissions'),
-            )
-        );
+        //$typeGenerator = new TypeGenerator(
+        //    $container->getParameter('overblog_graphql_types.config'),
+        //    new TypeBuilder(
+        //        new ExpressionConverter(new ExpressionLanguage()),
+        //        $container->getParameter('overblog_graphql.class_namespace')
+        //    ),
+        //    new EventDispatcher(),
+        //    new TypeGeneratorOptions(
+        //        $container->getParameter('overblog_graphql.class_namespace'),
+        //        $container->getParameter('overblog_graphql.cache_dir'),
+        //        $container->getParameter('overblog_graphql.use_classloader_listener'),
+        //        $container->getParameter('kernel.cache_dir'),
+        //        $container->getParameter('overblog_graphql.cache_dir_permissions'),
+        //    )
+        //);
+
+        // FIXME: get it from container temporary
+        $typeGenerator = $container->get('overblog_graphql.cache_compiler');
 
         /**
          * @var array<class-string, string> $generatedClasses
