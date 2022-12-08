@@ -27,6 +27,9 @@ final class TypeGeneratorPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
+        // TODO 1) consider excluding of generated types from services definitions
+        //      2) remove this compiler pass or refactor it
+        return;
         // We construct the TypeGenerator manually so that we don't have to boot the container
         // while we are in compilation phase.
         // See https://github.com/overblog/GraphQLBundle/issues/899

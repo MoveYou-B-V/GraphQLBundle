@@ -16,6 +16,12 @@ class TypeResolver extends AbstractResolver
     private array $cache = [];
     private ?string $currentSchemaName = null;
     private EventDispatcherInterface $dispatcher;
+    private GeneratedTypeSolutionProvider $generatedTypeSolutionProvider;
+
+    public function __construct(GeneratedTypeSolutionProvider $generatedTypeSolutionProvider)
+    {
+        $this->generatedTypeSolutionProvider = $generatedTypeSolutionProvider;
+    }
 
     public function setDispatcher(EventDispatcherInterface $dispatcher): void
     {
@@ -25,6 +31,15 @@ class TypeResolver extends AbstractResolver
     public function setCurrentSchemaName(?string $currentSchemaName): void
     {
         $this->currentSchemaName = $currentSchemaName;
+    }
+
+    public function hasSolution(string $id): bool
+    {
+        if (parent::hasSolution($id)) {
+            return true;
+        }
+
+        return $this->generatedTypeSolutionProvider->hasSolution($id);
     }
 
     /**
@@ -58,6 +73,15 @@ class TypeResolver extends AbstractResolver
         }
 
         return $this->cache[$alias];
+    }
+
+    protected function getSolutionLoader(string $id): callable
+    {
+        if (parent::hasSolution($id)) {
+            return parent::getSolutionLoader($id);
+        }
+
+        return $this->generatedTypeSolutionProvider->getSolutionLoader($id);
     }
 
     private function baseType(string $alias): Type

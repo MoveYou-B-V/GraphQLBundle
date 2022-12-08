@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Overblog\GraphQLBundle\Tests\Resolver;
 
 use GraphQL\Type\Definition\ObjectType;
+use Overblog\GraphQLBundle\Resolver\GeneratedTypeSolutionProvider;
 use Overblog\GraphQLBundle\Resolver\TypeResolver;
 use Overblog\GraphQLBundle\Resolver\UnresolvableException;
 
@@ -12,7 +13,10 @@ final class TypeResolverTest extends AbstractResolverTest
 {
     protected function createResolver(): TypeResolver
     {
-        return new TypeResolver();
+        $provider = $this->createMock(GeneratedTypeSolutionProvider::class);
+        $provider->method('hasSolution')->willReturn(false);
+
+        return new TypeResolver($provider);
     }
 
     protected function getResolverSolutionsMapping(): array

@@ -2,6 +2,9 @@ parameters:
     overblog_graphql_types.config: []
 
 services:
+    _defaults:
+        autowire: true
+
     Overblog\GraphQLBundle\Executor\Executor: ~
     Overblog\GraphQLBundle\Request\Parser: ~
     Overblog\GraphQLBundle\Request\BatchParser: ~
@@ -54,6 +57,10 @@ services:
     Overblog\GraphQLBundle\Resolver\AccessResolver:
         arguments:
             - '@overblog_graphql.promise_adapter'
+
+    Overblog\GraphQLBundle\Resolver\GeneratedTypeSolutionProvider:
+        arguments:
+            $namespace: '%overblog_graphql.class_namespace%'
 
     Overblog\GraphQLBundle\ExpressionLanguage\ExpressionLanguage:
         arguments:

@@ -64,6 +64,11 @@ abstract class AbstractResolver implements FluentResolverInterface
         return $this->solutionOptions[$id] ?? [];
     }
 
+    protected function getSolutionLoader(string $id): callable
+    {
+        return $this->solutions[$id];
+    }
+
     /**
      * @param mixed $solution
      */
@@ -81,16 +86,16 @@ abstract class AbstractResolver implements FluentResolverInterface
             return null;
         }
 
-        if ($this->fullyLoadedSolutions[$id]) {
+        if ($this->fullyLoadedSolutions[$id] ?? false) {
             return $this->solutions[$id];
-        } else {
-            $loader = $this->solutions[$id];
-            $this->solutions[$id] = $solution = $loader();
-            $this->onLoadSolution($solution);
-            $this->fullyLoadedSolutions[$id] = true;
-
-            return $solution;
         }
+
+        $loader = $this->getSolutionLoader($id);
+        $this->solutions[$id] = $solution = $loader();
+        $this->onLoadSolution($solution);
+        $this->fullyLoadedSolutions[$id] = true;
+
+        return $solution;
     }
 
     private function addAliases(string $id, array $aliases): void
