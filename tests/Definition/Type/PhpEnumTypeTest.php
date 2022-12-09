@@ -9,7 +9,7 @@ use GraphQL\Error\SerializationError;
 use GraphQL\Language\AST\EnumValueNode;
 use GraphQL\Language\AST\StringValueNode;
 use Overblog\GraphQLBundle\Definition\Type\PhpEnumType;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Enum\Color;
+use Overblog\GraphQLBundle\Tests\Definition\Type\fixtures\Color;
 use PHPUnit\Framework\TestCase;
 
 use function sprintf;
