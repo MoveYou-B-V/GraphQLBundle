@@ -1,4 +1,7 @@
 services:
+    _defaults:
+        autowire: true
+
     Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\TypeGuesser:
         arguments:
             - !tagged_iterator 'overblog_graphql.metadata.type_guesser_extension'
@@ -23,5 +26,4 @@ services:
         tags:
             - { name: 'overblog_graphql.metadata.type_guesser_extension', priority: 0 }
         arguments:
-            - '@Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap'
-            - '%graphql.configuration.metadata.type_guesser.doctrine_mapping%'
+            $doctrineMapping: '%graphql.configuration.metadata.type_guesser.doctrine_mapping%'

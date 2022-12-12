@@ -11,7 +11,8 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
-use Overblog\GraphQLBundle\Config\Parser\AnnotationParser;
+use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Reader\AnnotationReader;
+use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Reader\AttributeReader;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\TypeGuessingException;
 use Overblog\GraphQLBundle\Configuration\TypeConfiguration;
@@ -26,11 +27,19 @@ final class DoctrineTypeGuesserExtension extends TypeGuesserExtension
      * @var array<string, string|string[]>
      */
     protected array $doctrineMapping = [];
+    private AnnotationReader $annotationReader;
+    private AttributeReader $attributeReader;
 
-    public function __construct(ClassesTypesMap $classesTypesMap, array $doctrineMapping = [])
-    {
+    public function __construct(
+        ClassesTypesMap $classesTypesMap,
+        AnnotationReader $annotationReader,
+        AttributeReader $attributeReader,
+        array $doctrineMapping = []
+    ) {
         parent::__construct($classesTypesMap);
         $this->doctrineMapping = $doctrineMapping;
+        $this->annotationReader = $annotationReader;
+        $this->attributeReader = $attributeReader;
     }
 
     public function getName(): string
@@ -113,37 +122,16 @@ final class DoctrineTypeGuesserExtension extends TypeGuesserExtension
 
     private function getMetadata(Reflector $reflector, string $annotationClass): ?MappingAnnotation
     {
-        return $this->getAttribute($reflector, $annotationClass) ?: $this->getAnnotation($reflector, $annotationClass);
+        $attributes = PHP_VERSION_ID >= 80000 ? $this->attributeReader->getMetadatas($reflector) : [];
+        if (!$attributes) {
+            $attributes = $this->annotationReader->getMetadatas($reflector);
+        }
+
+        return $this->filterAnnotation($attributes, $annotationClass);
     }
 
-    private function getAttribute(Reflector $reflector, string $annotationClass): ?MappingAnnotation
+    private function filterAnnotation(array $annotations, string $annotationClass): ?MappingAnnotation
     {
-        if (PHP_VERSION_ID >= 80000) {
-            $attributes = $reflector->getAttributes($annotationClass);
-        } else {
-            $attributes = [];
-        }
-
-        $attribute = current($attributes) ?: null;
-        if (null !== $attribute) {
-            return $attribute->newInstance();
-        }
-
-        return null;
-    }
-
-    private function getAnnotation(Reflector $reflector, string $annotationClass): ?MappingAnnotation
-    {
-        $reader = AnnotationParser::getAnnotationReader();
-        $annotations = [];
-        switch (true) {
-            case $reflector instanceof ReflectionClass: $annotations = $reader->getClassAnnotations($reflector);
-                break;
-            case $reflector instanceof ReflectionMethod: $annotations = $reader->getMethodAnnotations($reflector);
-                break;
-            case $reflector instanceof ReflectionProperty: $annotations = $reader->getPropertyAnnotations($reflector);
-                break;
-        }
         foreach ($annotations as $annotation) {
             if ($annotation instanceof $annotationClass) {
                 /** @var MappingAnnotation $annotation */
