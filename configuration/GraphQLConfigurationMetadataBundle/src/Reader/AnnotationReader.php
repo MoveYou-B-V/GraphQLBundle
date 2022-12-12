@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Reader;
 
-use Doctrine\Common\Annotations\AnnotationReader as DotrineAnnotationReader; // TODO: fix misprint
+use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\Reader;
@@ -51,7 +51,7 @@ class AnnotationReader implements MetadataReaderInterface
     protected function getAnnotationReader(): Reader
     {
         if (null === $this->annotationReader) {
-            if (!class_exists(DotrineAnnotationReader::class) ||
+            if (!class_exists(DoctrineAnnotationReader::class) ||
                 !class_exists(AnnotationRegistry::class)) {
                 // @codeCoverageIgnoreStart
                 throw new RuntimeException('In order to use graphql annotations, you need to require doctrine annotations');
@@ -59,7 +59,7 @@ class AnnotationReader implements MetadataReaderInterface
             }
 
             AnnotationRegistry::registerLoader('class_exists');
-            $reader = new DotrineAnnotationReader();
+            $reader = new DoctrineAnnotationReader();
             if ($this->useCache) {
                 $cacheKey = md5(__DIR__);
                 // @codeCoverageIgnoreStart
