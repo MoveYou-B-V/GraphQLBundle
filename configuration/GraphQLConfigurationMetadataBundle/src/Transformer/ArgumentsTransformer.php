@@ -10,7 +10,6 @@ use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\NonNull;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-// TODO check merge conflict solving
 use Overblog\GraphQLBundle\Definition\Type\PhpEnumType;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -30,9 +29,12 @@ final class ArgumentsTransformer
 {
     private PropertyAccessor $accessor;
     private ?ValidatorInterface $validator;
-    private array $classesMap;
     private ClassesTypesMap $classesTypesMap;
 
+    /**
+     * FIXME: parameters with default value MUST be after parameters without default values.
+     * @see https://www.php.net/manual/en/functions.arguments.php#functions.arguments.default Example #7 Incorrect usage of default function arguments
+     */
     public function __construct(ValidatorInterface $validator = null, ClassesTypesMap $classesTypesMap)
     {
         $this->validator = $validator;
@@ -93,10 +95,12 @@ final class ArgumentsTransformer
                 $this->accessor->setValue($instance, 'value', $data);
 
                 return $instance;
-            } else {
-                return $data;
             }
-        } elseif ($type instanceof InputObjectType) {
+
+            return $data;
+        }
+
+        if ($type instanceof InputObjectType) {
             $instance = $this->getTypeClassInstance($type->name);
             if (!$instance) {
                 return $data;
@@ -122,9 +126,9 @@ final class ArgumentsTransformer
             }
 
             return $instance;
-        } else {
-            return $data;
         }
+
+        return $data;
     }
 
     /**
