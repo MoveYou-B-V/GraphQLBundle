@@ -12,7 +12,7 @@ final class EvaluatorIsNotAllowedException extends Exception
     public function __construct(string $expressionFunctionName, int $code = 0, Throwable $previous = null)
     {
         parent::__construct(
-            "The expression function '$expressionFunctionName' cannot be used by it's evaluator.",
+            "The expression function '$expressionFunctionName' cannot be used by its evaluator.",
             $code,
             $previous
         );

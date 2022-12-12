@@ -196,8 +196,8 @@ class Configuration
                     $this->createDuplicationViolation($context, $name, $items, $parent);
                 } else {
                     // Keep the last item defined with this name
-                    $keepedIndex = count($items) - 1;
-                    if ($keepedIndex === $index) {
+                    $keptIndex = count($items) - 1;
+                    if ($keptIndex === $index) {
                         $this->validateNames($context, $item->getChildren(), $item);
                     } else {
                         $this->removeType($item);
