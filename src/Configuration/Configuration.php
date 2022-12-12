@@ -181,7 +181,7 @@ class Configuration
         }, []);
 
         foreach ($itemsByName as $name => $items) {
-            if (count($items) > 1 && self::DUPLICATE_STRATEGY_FORBIDDEN === $this->duplicateStrategy) {
+            if (self::DUPLICATE_STRATEGY_FORBIDDEN === $this->duplicateStrategy && count($items) > 1) {
                 $this->createDuplicationViolation($context, $name, $items, $parent);
                 continue;
             }
