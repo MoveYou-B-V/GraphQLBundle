@@ -107,14 +107,14 @@ final class ValidationNode
      */
     public function findParent(string $name): ?ValidationNode
     {
-        $current = $this->__parent;
+        $current = $this->getParent();
 
         while (null !== $current) {
             if ($current->getName() === $name) {
                 return $current;
-            } else {
-                $current = $current->getParent();
             }
+
+            $current = $current->getParent();
         }
 
         return null;
@@ -137,5 +137,15 @@ final class ValidationNode
     public function __get(string $name): ?string
     {
         return $this->$name ?? null;
+    }
+
+    public function __set(string $name, $value): void
+    {
+        $this->$name = $value;
+    }
+
+    public function __isset(string $name): bool
+    {
+        return isset(get_object_vars($this)[$name]);
     }
 }

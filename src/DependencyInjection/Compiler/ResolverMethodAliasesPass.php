@@ -47,7 +47,7 @@ final class ResolverMethodAliasesPass implements CompilerPassInterface
                         $publicReflectionMethods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
                         $isAliased = $reflectionClass->implementsInterface(AliasedInterface::class);
                         foreach ($publicReflectionMethods as $publicReflectionMethod) {
-                            if ('__construct' === $publicReflectionMethod->name || $isAliased && 'getAliases' === $publicReflectionMethod->name) {
+                            if ('__construct' === $publicReflectionMethod->name || ($isAliased && 'getAliases' === $publicReflectionMethod->name)) {
                                 continue;
                             }
                             $definition->addTag($tagName, ['method' => $publicReflectionMethod->name]);

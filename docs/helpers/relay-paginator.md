@@ -60,7 +60,7 @@ $paginator = new Paginator(function ($offset, $limit) {
 
 $result = $paginator->forward(new Argument(['first' => 4]));
 
-var_dump($result->edges);
+var_dump($result->getEdges());
 
 ```
 
@@ -126,7 +126,7 @@ $result = $paginator->forward(
     )
 );
 
-var_dump($result->edges);
+var_dump($result->getEdges());
 
 ```
 

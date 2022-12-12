@@ -39,11 +39,13 @@ class LegacyBuilder implements BuilderInterface
     {
         switch ($this->type) {
             case self::TYPE_FIELDS:
-                return in_array($typeConfiguration->getGraphQLType(), [TypeConfiguration::TYPE_OBJECT, TypeConfiguration::TYPE_INTERFACE]);
+                return in_array($typeConfiguration->getGraphQLType(), [TypeConfiguration::TYPE_OBJECT, TypeConfiguration::TYPE_INTERFACE], true);
             case self::TYPE_FIELD:
             case self::TYPE_ARGS:
                 return TypeConfiguration::TYPE_FIELD === $typeConfiguration->getGraphQLType();
         }
+
+        return false;
     }
 
     public function getConfiguration(TypeConfiguration $typeConfiguration = null): TreeBuilder

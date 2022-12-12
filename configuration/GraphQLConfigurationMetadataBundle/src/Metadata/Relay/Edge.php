@@ -24,6 +24,8 @@ final class Edge extends Type
 
     public function __construct(string $node)
     {
+        parent::__construct();
+
         $this->node = $node;
     }
 }

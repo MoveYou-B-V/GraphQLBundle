@@ -509,22 +509,22 @@ Then you could link class members this way:
 ```yaml
 Mutation:
     type: object
-        config:
-            fields:
-                editPost:
-                    type: Post
-                    resolve: "@=mutation('edit_post', [args])"
-                    validation:
-                        link: App\Entity\Post # targeting the class
-                    args:
-                        title:
-                            type: String!
-                            validation:
-                                link: App\Entity\Post::title # property and getters
-                        text:
-                            type: String!
-                            validation:
-                                link: App\Entity\Post::$text # only property
+    config:
+        fields:
+            editPost:
+                type: Post
+                resolve: "@=mutation('edit_post', [args])"
+                validation:
+                    link: App\Entity\Post # targeting the class
+                args:
+                    title:
+                        type: String!
+                        validation:
+                            link: App\Entity\Post::title # property and getters
+                    text:
+                        type: String!
+                        validation:
+                            link: App\Entity\Post::$text # only property
 ```
 or use the short form (omitting the `link` key), which is equal to the config above:
 ```yaml
@@ -594,20 +594,20 @@ type. The nesting can be any depth.
 ```yaml
 Mutation:
     type: object
-        config:
-            fields:
-                updateUser:
-                    type: Post
-                    resolve: "@=mutation('update_user', [args])"
-                    args:
-                        id: 
-                            type: ID!
-                        address:
-                            type: AddressInput
-                            validation: cascade # delegate to AddressInput
-                        workPeriod:
-                            type: PeriodInput
-                            validation: cascade # delegate to PeriodInput
+    config:
+        fields:
+            updateUser:
+                type: Post
+                resolve: "@=mutation('update_user', [args])"
+                args:
+                    id: 
+                        type: ID!
+                    address:
+                        type: AddressInput
+                        validation: cascade # delegate to AddressInput
+                    workPeriod:
+                        type: PeriodInput
+                        validation: cascade # delegate to PeriodInput
 
 AddressInput:
     type: input-object

@@ -745,7 +745,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
             $this->fail('Union with missing resolve type shoud have raise an exception');
         } catch (Exception $e) {
             $this->assertInstanceOf(MetadataConfigurationException::class, $e);
-            $this->assertMatchesRegularExpression('/The metadata '.preg_quote($this->formatMetadata('Union')).' has no "resolveType"/', $e->getPrevious()->getMessage());
+            $this->assertMatchesRegularExpression('/The metadata '.preg_quote($this->formatMetadata('Union'), '/').' has no "resolveType"/', $e->getPrevious()->getMessage());
         }
     }
 
@@ -757,7 +757,7 @@ abstract class ConfigurationMetadataTest extends WebTestCase
             $this->fail($this->formatMetadata('Access').' annotation without a '.$this->formatMetadata('Field').' annotation should raise an exception');
         } catch (Exception $e) {
             $this->assertInstanceOf(MetadataConfigurationException::class, $e);
-            $this->assertMatchesRegularExpression('/The metadata '.preg_quote($this->formatMetadata('Field')).' can only be applied to public method/', $e->getPrevious()->getMessage());
+            $this->assertMatchesRegularExpression('/The metadata '.preg_quote($this->formatMetadata('Field'), '/').' can only be applied to public method/', $e->getPrevious()->getMessage());
         }
     }
 

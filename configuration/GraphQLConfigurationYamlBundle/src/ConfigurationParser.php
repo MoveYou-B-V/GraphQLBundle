@@ -139,10 +139,10 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                         ]));
                     }
                     if (isset($fieldConfig['argsBuilder'])) {
-                        $name = $fieldConfig['argsBuilder']['builder'];
+                        $builderName = $fieldConfig['argsBuilder']['builder'];
                         $configuration = $fieldConfig['argsBuilder']['config'] ?? null;
                         $fieldConfiguration->addExtension(new ExtensionConfiguration(BuilderExtension::ALIAS, [
-                            'name' => $name,
+                            'name' => $builderName,
                             'configuration' => $configuration,
                         ]));
                     }
@@ -182,8 +182,8 @@ abstract class ConfigurationParser extends ConfigurationFilesParser
                 if (isset($config['enumClass'])) {
                     $typeConfiguration->setEnumClass($config['enumClass']);
                 }
-                foreach ($config['values'] as $name => $valueConfig) {
-                    $valueConfiguration = new EnumValueConfiguration($name, $valueConfig['value']);
+                foreach ($config['values'] as $valueName => $valueConfig) {
+                    $valueConfiguration = new EnumValueConfiguration($valueName, $valueConfig['value']);
                     $this->setCommonProperties($valueConfiguration, $valueConfig);
                     $typeConfiguration->addValue($valueConfiguration);
                 }

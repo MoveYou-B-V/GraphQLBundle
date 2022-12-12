@@ -231,7 +231,7 @@ For example:
 
 ```yaml (graphql.yaml)
 overblog_graphql:
-    ...
+    # ...
     doctrine:
         types_mapping:
             text[]:    "[String]"

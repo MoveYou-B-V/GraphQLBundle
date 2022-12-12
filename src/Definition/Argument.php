@@ -73,4 +73,14 @@ final class Argument implements ArgumentInterface
     {
         return $this->rawArguments[$name] ?? null;
     }
+
+    public function __set(string $name, $value): void
+    {
+        throw new \DomainException('Direct value setting is forbidden');
+    }
+
+    public function __isset(string $name): bool
+    {
+        return isset(get_object_vars($this)[$name]);
+    }
 }

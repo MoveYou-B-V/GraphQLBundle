@@ -63,7 +63,7 @@ abstract class Extension
     public function processConfiguration(TypeConfiguration $type, $configuration)
     {
         if (!in_array($type->getGraphQLType(), $this->supports())) {
-            throw new ExtensionException('Extension %s does not support type "%s"', $type->getGraphQLType());
+            throw new ExtensionException(sprintf('Extension %s does not support type "%s"', static::ALIAS, $type->getGraphQLType()));
         }
 
         $tree = $this->getConfiguration($type);

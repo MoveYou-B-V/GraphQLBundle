@@ -51,7 +51,7 @@ final class CustomScalarTypeTest extends TestCase
     public function testAssertValidWithInvalidScalarType($scalarType, $got): void
     {
         $this->expectException(InvariantViolation::class);
-        $name = uniqid('custom');
+        $name = uniqid('custom', true);
         $this->expectExceptionMessage(sprintf(
             '%s must provide a valid "scalarType" instance of %s but got: %s',
             $name,

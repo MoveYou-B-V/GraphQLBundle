@@ -93,7 +93,7 @@ final class CompileCommandTest extends TestCase
                  \-[\-]+\s+\-[\-]+\s
                 OUTPUT;
 
-            $display = str_replace('{{PATH}}', preg_quote($this->cacheDir), $display);
+            $display = str_replace('{{PATH}}', preg_quote($this->cacheDir, '/'), $display);
         }
 
         return str_replace("\n", PHP_EOL, $display);

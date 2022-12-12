@@ -296,7 +296,7 @@ final class OverblogGraphQLExtension extends Extension
                 $alias = $params['alias'];
                 $class = $params['class'];
 
-                $definition = $container->register($class, $class);
+                $container->register($class, $class);
                 $definition = $container->register('overblog_graphql.builder_extension.legacy.'.$alias, LegacyBuilder::class);
                 $definition->setArguments([$type, new Reference($class)]);
                 $definition->addTag('overblog_graphqL.extension_builder.builder', ['alias' => $alias]);

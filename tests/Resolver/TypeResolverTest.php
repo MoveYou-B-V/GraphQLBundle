@@ -13,6 +13,7 @@ final class TypeResolverTest extends AbstractResolverTest
 {
     protected function createResolver(): TypeResolver
     {
+        // NOTE: mocking of final class permitted by the package "dg/bypass-finals"
         $provider = $this->createMock(GeneratedTypeSolutionProvider::class);
         $provider->method('hasSolution')->willReturn(false);
 

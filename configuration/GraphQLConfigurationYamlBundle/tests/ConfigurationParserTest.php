@@ -57,7 +57,7 @@ class ConfigurationParserTest extends WebTestCase
     {
         $dirname = __DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'broken'.DIRECTORY_SEPARATOR.'yaml';
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessageMatches('#The file "(.*)'.preg_quote(DIRECTORY_SEPARATOR).'broken.types.yml" does not contain valid YAML\.#');
+        $this->expectExceptionMessageMatches('#The file "(.*)'.preg_quote(DIRECTORY_SEPARATOR, '/').'broken.types.yml" does not contain valid YAML\.#');
 
         $parser = new ConfigurationYamlParser([$dirname]);
         $parser->getConfiguration();

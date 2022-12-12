@@ -29,6 +29,8 @@ final class Connection extends Type
 
     public function __construct(string $edge = null, string $node = null)
     {
+        parent::__construct();
+
         $this->edge = $edge;
         $this->node = $node;
     }

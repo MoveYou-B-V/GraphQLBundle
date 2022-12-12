@@ -36,6 +36,11 @@ trait DeprecatedPropertyPublicAccessTrait
         return $this->accessProperty('set', $name, $value);
     }
 
+    public function __isset(string $name): bool
+    {
+        return isset(get_object_vars($this)[$name]);
+    }
+
     /**
      * @param mixed|null $value
      *
@@ -43,7 +48,7 @@ trait DeprecatedPropertyPublicAccessTrait
      */
     private function accessProperty(string $type, string $name, $value = null)
     {
-        if (in_array($name, array_keys(get_object_vars($this)))) {
+        if (array_key_exists($name, get_object_vars($this))) {
             $method = $type.ucfirst($name);
 
             @trigger_error(
@@ -66,8 +71,8 @@ trait DeprecatedPropertyPublicAccessTrait
             $this->$name = $value;
 
             return null;
-        } else {
-            return $this->$name;
         }
+
+        return $this->$name;
     }
 }

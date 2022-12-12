@@ -206,7 +206,7 @@ final class Configuration implements ConfigurationInterface
         // @phpstan-ignore-next-line
         $node
             ->beforeNormalization()
-                ->ifTrue(fn ($v) => isset($v['query']) && is_string($v['query']) || isset($v['mutation']) && is_string($v['mutation']))
+                ->ifTrue(fn ($v) => (isset($v['query']) && is_string($v['query'])) || (isset($v['mutation']) && is_string($v['mutation'])))
                 ->then(fn ($v) => ['default' => $v])
             ->end()
             ->useAttributeAsKey('name')
