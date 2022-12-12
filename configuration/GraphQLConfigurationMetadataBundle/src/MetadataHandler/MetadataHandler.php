@@ -115,7 +115,7 @@ abstract class MetadataHandler
     }
 
     /**
-     * Format an metadata type to be used in errors text
+     * Format a metadata type to be used in errors text
      */
     protected function formatMetadata(string $metadataType): string
     {
@@ -144,15 +144,16 @@ abstract class MetadataHandler
      * @phpstan-template T of object
      * @phpstan-param class-string<T>|class-string<T>[] $metadataClasses
      *
-     * @return array
+     * @phpstan-return  T[]
+     * @return object[]
      */
-    protected function getMetadataMatching(array $metadatas, $metadataClasses)
+    protected function getMetadataMatching(array $metadatas, $metadataClasses): array
     {
         if (is_string($metadataClasses)) {
             $metadataClasses = [$metadataClasses];
         }
 
-        return array_filter($metadatas, function ($metadata) use ($metadataClasses) {
+        return array_filter($metadatas, static function ($metadata) use ($metadataClasses): bool {
             foreach ($metadataClasses as $metadataClass) {
                 if ($metadata instanceof $metadataClass) {
                     return true;
@@ -172,7 +173,7 @@ abstract class MetadataHandler
     }
 
     /**
-     * Format an expression (ie. add "@=" if not set).
+     * Format an expression (i.e. add "@=" if not set).
      */
     protected function formatExpression(string $expression): string
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler;
 
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata;
+use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata\Enum;
 use Overblog\GraphQLBundle\Configuration\Configuration;
 use Overblog\GraphQLBundle\Configuration\EnumConfiguration;
 use Overblog\GraphQLBundle\Configuration\EnumValueConfiguration;
@@ -20,11 +21,6 @@ class EnumHandler extends MetadataHandler
 {
     const TYPE = TypeConfiguration::TYPE_ENUM;
 
-    protected function getEnumName(ReflectionClass $reflectionClass, Metadata\Metadata $enumMetadata): string
-    {
-        return $enumMetadata->name ?? $reflectionClass->getShortName();
-    }
-
     public function setClassesMap(ReflectionClass $reflectionClass, Metadata\Metadata $enumMetadata): void
     {
         $gqlName = $this->getEnumName($reflectionClass, $enumMetadata);
@@ -36,6 +32,10 @@ class EnumHandler extends MetadataHandler
      */
     public function addConfiguration(Configuration $configuration, ReflectionClass $reflectionClass, Metadata\Metadata $enumMetadata): ?TypeConfiguration
     {
+        if (!$enumMetadata instanceof Enum) {
+            throw new \InvalidArgumentException(sprintf('Metadata arguments MUST be an instance of %s', Enum::class));
+        }
+
         $gqlName = $this->getEnumName($reflectionClass, $enumMetadata);
         $metadatas = $this->getMetadatas($reflectionClass);
 
@@ -45,6 +45,7 @@ class EnumHandler extends MetadataHandler
             ->setOrigin($this->getOrigin($reflectionClass));
 
         // Annotation @EnumValue handling
+        /** @var Metadata\EnumValue[] $enumValues */
         $enumValues = $this->getMetadataMatching($metadatas, Metadata\EnumValue::class);
 
         foreach ($reflectionClass->getConstants() as $name => $value) {
@@ -58,7 +59,7 @@ class EnumHandler extends MetadataHandler
                 ->setOrigin($this->getOrigin($reflectionConstant));
 
             // Search matching @EnumValue handling
-            $enumValueAnnotation = current(array_filter($enumValues, fn ($enumValueAnnotation) => $enumValueAnnotation->name === $name));
+            $enumValueAnnotation = current(array_filter($enumValues, static fn (Metadata\EnumValue $enumValueAnnotation): bool => $enumValueAnnotation->name === $name));
 
             if (false !== $enumValueAnnotation) {
                 if (isset($enumValueAnnotation->description)) {
@@ -76,5 +77,10 @@ class EnumHandler extends MetadataHandler
         $configuration->addType($enumConfiguration);
 
         return $enumConfiguration;
+    }
+
+    protected function getEnumName(ReflectionClass $reflectionClass, Metadata\Metadata $enumMetadata): string
+    {
+        return $enumMetadata->name ?? $reflectionClass->getShortName();
     }
 }
