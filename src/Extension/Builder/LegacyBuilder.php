@@ -92,7 +92,7 @@ class LegacyBuilder implements BuilderInterface
             $mapping = ['type' => $mapping];
         }
 
-        $fieldConfiguration = $field ?: FieldConfiguration::get($name, $mapping['type']);
+        $fieldConfiguration = $field ?: FieldConfiguration::create($name, $mapping['type']);
 
         if (isset($mapping['type'])) {
             $fieldConfiguration->setType($mapping['type']);
@@ -120,7 +120,7 @@ class LegacyBuilder implements BuilderInterface
         if (is_string($mapping)) {
             $mapping = ['type' => $mapping];
         }
-        $argConfiguration = ArgumentConfiguration::get($name, $mapping['type']);
+        $argConfiguration = ArgumentConfiguration::create($name, $mapping['type']);
         if (isset($mapping['defaultValue'])) {
             $argConfiguration->setDefaultValue($mapping['defaultValue']);
         }

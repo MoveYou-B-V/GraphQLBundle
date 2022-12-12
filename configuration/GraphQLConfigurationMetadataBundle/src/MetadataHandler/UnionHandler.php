@@ -36,7 +36,7 @@ class UnionHandler extends MetadataHandler
         $gqlName = $this->getUnionName($reflectionClass, $unionMetadata);
         $metadatas = $this->getMetadatas($reflectionClass);
 
-        $unionConfiguration = UnionConfiguration::get($gqlName)
+        $unionConfiguration = UnionConfiguration::create($gqlName)
             ->setDescription($this->getDescription($metadatas))
             ->addExtensions($this->getExtensions($metadatas))
             ->setOrigin($this->getOrigin($reflectionClass));

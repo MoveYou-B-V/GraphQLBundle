@@ -32,13 +32,13 @@ class ConfigurationTest extends BaseConfigurationTest
     {
         $configuration = new Configuration();
         $configuration
-            ->addType(ObjectConfiguration::get('type1')
-                ->addField(FieldConfiguration::get('field1', 'String')
-                        ->addArgument(ArgumentConfiguration::get('arg1', 'Int'))
+            ->addType(ObjectConfiguration::create('type1')
+                ->addField(FieldConfiguration::create('field1', 'String')
+                        ->addArgument(ArgumentConfiguration::create('arg1', 'Int'))
                     )
                 );
         $configuration
-            ->addType(EnumConfiguration::get('enum1')->addValue(EnumValueConfiguration::get('value1', 2)));
+            ->addType(EnumConfiguration::create('enum1')->addValue(EnumValueConfiguration::create('value1', 2)));
 
         $this->assertEquals($configuration->get('type1.field1.arg1')->getType(), 'Int');
         $this->assertEquals($configuration->get('enum1.value1')->getValue(), 2);

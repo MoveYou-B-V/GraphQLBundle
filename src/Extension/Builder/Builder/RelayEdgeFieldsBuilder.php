@@ -41,10 +41,10 @@ class RelayEdgeFieldsBuilder implements BuilderInterface
      */
     public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration, Configuration $configuration): void
     {
-        $node = FieldConfiguration::get('node', $builderConfiguration['nodeType'])
+        $node = FieldConfiguration::create('node', $builderConfiguration['nodeType'])
                 ->setDescription($builderConfiguration['nodeDescription']);
 
-        $cursor = FieldConfiguration::get('cursor', 'String!')
+        $cursor = FieldConfiguration::create('cursor', 'String!')
                 ->setDescription('The edge cursor');
 
         $typeConfiguration->addFields([$node, $cursor]);

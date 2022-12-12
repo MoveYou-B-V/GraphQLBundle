@@ -39,7 +39,7 @@ class InputHandler extends MetadataHandler
         $gqlName = $this->getInputName($reflectionClass, $inputMetadata);
         $metadatas = $this->getMetadatas($reflectionClass);
 
-        $inputConfiguration = InputConfiguration::get($gqlName)
+        $inputConfiguration = InputConfiguration::create($gqlName)
             ->setDescription($this->getDescription($metadatas))
             ->addExtensions($this->getExtensions($metadatas))
             ->setOrigin($this->getOrigin($reflectionClass));
@@ -97,7 +97,7 @@ class InputHandler extends MetadataHandler
                 }
             }
 
-            $fieldConfiguration = InputFieldConfiguration::get($reflector->getName(), $fieldType)
+            $fieldConfiguration = InputFieldConfiguration::create($reflector->getName(), $fieldType)
                 ->setDescription($this->getDescription($metadatas))
                 ->addExtensions($this->getExtensions($metadatas))
                 ->setOrigin($this->getOrigin($reflector));

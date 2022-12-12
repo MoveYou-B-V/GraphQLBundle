@@ -14,16 +14,16 @@ class PageInfoConfiguration implements ConfigurationProviderInterface
     public function getConfiguration(): Configuration
     {
         $configuration = new Configuration();
-        $pageInfoConfiguration = ObjectConfiguration::get('PageInfo')
+        $pageInfoConfiguration = ObjectConfiguration::create('PageInfo')
             ->setDescription('Information about pagination in a connection.')
             ->addFields([
-                FieldConfiguration::get('hasNextPage', 'Boolean!')
+                FieldConfiguration::create('hasNextPage', 'Boolean!')
                     ->setDescription('When paginating forwards, are there more items?'),
-                FieldConfiguration::get('hasPreviousPage', 'Boolean!')
+                FieldConfiguration::create('hasPreviousPage', 'Boolean!')
                     ->setDescription('When paginating backwards, are there more items?'),
-                FieldConfiguration::get('startCursor', 'String')
+                FieldConfiguration::create('startCursor', 'String')
                     ->setDescription('When paginating backwards, the cursor to continue.'),
-                FieldConfiguration::get('endCursor', 'String')
+                FieldConfiguration::create('endCursor', 'String')
                     ->setDescription('When paginating forwards, the cursor to continue.'),
             ]);
 

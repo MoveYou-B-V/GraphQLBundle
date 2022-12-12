@@ -28,7 +28,7 @@ class ExtensionConfiguration
      * @param string     $alias         The builder alias
      * @param mixed|null $configuration The builder configuration
      */
-    public static function get(string $alias, $configuration = null): ExtensionConfiguration
+    public static function create(string $alias, $configuration = null): ExtensionConfiguration
     {
         return new static($alias, $configuration);
     }

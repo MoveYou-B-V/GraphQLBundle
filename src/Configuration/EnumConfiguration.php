@@ -18,7 +18,7 @@ class EnumConfiguration extends RootTypeConfiguration
         }
     }
 
-    public static function get(string $name, array $values = []): EnumConfiguration
+    public static function create(string $name, array $values = []): EnumConfiguration
     {
         return new static($name, $values);
     }

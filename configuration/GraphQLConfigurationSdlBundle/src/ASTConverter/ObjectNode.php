@@ -19,13 +19,13 @@ class ObjectNode implements NodeInterface
         $fieldsType = Fields::TYPE_FIELDS;
         switch (static::TYPENAME) {
             case 'object':
-                $configuration = ObjectConfiguration::get($name);
+                $configuration = ObjectConfiguration::create($name);
                 break;
             case 'interface':
-                $configuration = InterfaceConfiguration::get($name);
+                $configuration = InterfaceConfiguration::create($name);
                 break;
             case 'input-object':
-                $configuration = InputConfiguration::get($name);
+                $configuration = InputConfiguration::create($name);
                 $fieldsType = Fields::TYPE_INPUT_FIELDS;
                 break;
         }

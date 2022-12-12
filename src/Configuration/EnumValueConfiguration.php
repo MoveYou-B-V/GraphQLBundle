@@ -17,7 +17,7 @@ class EnumValueConfiguration extends TypeConfiguration
         $this->value = $value;
     }
 
-    public static function get(string $name, $value): EnumValueConfiguration
+    public static function create(string $name, $value): EnumValueConfiguration
     {
         return new static($name, $value);
     }

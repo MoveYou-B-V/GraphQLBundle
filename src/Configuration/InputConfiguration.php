@@ -20,7 +20,7 @@ class InputConfiguration extends RootTypeConfiguration
         $this->name = $name;
     }
 
-    public static function get(string $name): InputConfiguration
+    public static function create(string $name): InputConfiguration
     {
         return new static($name);
     }

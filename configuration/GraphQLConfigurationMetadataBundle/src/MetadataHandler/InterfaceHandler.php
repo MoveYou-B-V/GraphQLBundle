@@ -30,7 +30,7 @@ class InterfaceHandler extends ObjectHandler
         $gqlName = $this->getInterfaceName($reflectionClass, $interfaceMetadata);
         $metadatas = $this->getMetadatas($reflectionClass);
 
-        $interfaceConfiguration = InterfaceConfiguration::get($gqlName)
+        $interfaceConfiguration = InterfaceConfiguration::create($gqlName)
             ->setDescription($this->getDescription($metadatas))
             ->addExtensions($this->getExtensions($metadatas))
             ->setOrigin($this->getOrigin($reflectionClass));

@@ -35,7 +35,7 @@ class ScalarHandler extends MetadataHandler
         $gqlName = $this->getScalarName($reflectionClass, $scalarMetadata);
         $metadatas = $this->getMetadatas($reflectionClass);
 
-        $scalarConfiguration = ScalarConfiguration::get($gqlName)
+        $scalarConfiguration = ScalarConfiguration::create($gqlName)
             ->setDescription($this->getDescription($metadatas))
             ->addExtensions($this->getExtensions($metadatas))
             ->setOrigin($this->getOrigin($reflectionClass));

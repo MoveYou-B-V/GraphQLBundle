@@ -83,28 +83,28 @@ class BuilderExtensionTest extends TestCase
 
     public function testMissingBuilder(): void
     {
-        $field = FieldConfiguration::get('MyField', 'String');
+        $field = FieldConfiguration::create('MyField', 'String');
         $this->expectExceptionMessage('Builder "UnknowBuilder" not found. Available builders: MyBuilder');
         $this->getExtension()->handleConfiguration($this->c, $field, ['name' => 'UnknowBuilder']);
     }
 
     public function testBuilderIncompatibleType(): void
     {
-        $field = FieldConfiguration::get('MyField', 'String');
+        $field = FieldConfiguration::create('MyField', 'String');
         $this->expectExceptionMessage('The builder "MyBuilder" doesn\'t support GraphQL type "field"');
         $this->getExtension()->handleConfiguration($this->c, $field, ['name' => 'MyBuilder']);
     }
 
     public function testBuilderInvalidConfiguration(): void
     {
-        $object = ObjectConfiguration::get('MyType');
+        $object = ObjectConfiguration::create('MyType');
         $this->expectExceptionMessageMatches('/Unrecognized option "foo" under "MyBuilder"/');
         $this->getExtension()->handleConfiguration($this->c, $object, ['name' => 'MyBuilder', 'configuration' => ['foo' => 'bar']]);
     }
 
     public function testBuilderConfiguration(): void
     {
-        $object = ObjectConfiguration::get('MyType');
+        $object = ObjectConfiguration::create('MyType');
         $this->getExtension()->getBuilder('MyBuilder')
             ->expects($this->once())
             ->method('updateConfiguration')->with($object, ['config1' => 'foo', 'config2' => 'bar', 'config3' => 'baz']);
@@ -114,7 +114,7 @@ class BuilderExtensionTest extends TestCase
 
     public function testBuilderConfigurationString(): void
     {
-        $object = ObjectConfiguration::get('MyType');
+        $object = ObjectConfiguration::create('MyType');
 
         $this->getExtension()->getBuilder('MyBuilder2')
             ->expects($this->once())

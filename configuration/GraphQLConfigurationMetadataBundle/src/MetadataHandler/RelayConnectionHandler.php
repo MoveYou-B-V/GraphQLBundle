@@ -32,15 +32,15 @@ class RelayConnectionHandler extends ObjectHandler
             $edgeType = $typeMetadata->edge ?? false;
             if (!$edgeType) {
                 $edgeType = $typeConfiguration->getName().'Edge';
-                $objectConfiguration = ObjectConfiguration::get($edgeType)
-                    ->addExtension(ExtensionConfiguration::get(BuilderExtension::ALIAS, [
+                $objectConfiguration = ObjectConfiguration::create($edgeType)
+                    ->addExtension(ExtensionConfiguration::create(BuilderExtension::ALIAS, [
                         'name' => 'relay-edge',
                         'configuration' => ['nodeType' => $typeMetadata->node],
                     ]));
                 $configuration->addType($objectConfiguration);
             }
 
-            $typeConfiguration->addExtension(ExtensionConfiguration::get(BuilderExtension::ALIAS, [
+            $typeConfiguration->addExtension(ExtensionConfiguration::create(BuilderExtension::ALIAS, [
                 'name' => 'relay-connection',
                 'configuration' => ['edgeType' => $edgeType],
             ]));

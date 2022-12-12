@@ -73,9 +73,9 @@ class BuilderExtensionLegacyTest extends TestCase
     {
         $extension = $this->getExtension();
 
-        $extensionConfiguration = ExtensionConfiguration::get(BuilderExtension::ALIAS, ['name' => 'LegacyFields', 'configuration' => []]);
-        $object = ObjectConfiguration::get('MyType')
-                ->addField(FieldConfiguration::get('field0', 'String!'))
+        $extensionConfiguration = ExtensionConfiguration::create(BuilderExtension::ALIAS, ['name' => 'LegacyFields', 'configuration' => []]);
+        $object = ObjectConfiguration::create('MyType')
+                ->addField(FieldConfiguration::create('field0', 'String!'))
                 ->addExtension($extensionConfiguration);
         $configuration = new Configuration();
         $configuration->addType($object);
@@ -96,11 +96,11 @@ class BuilderExtensionLegacyTest extends TestCase
     {
         $extension = $this->getExtension();
 
-        $extensionConfiguration = ExtensionConfiguration::get(BuilderExtension::ALIAS, ['name' => 'LegacyField']);
-        $field = FieldConfiguration::get('field0', 'String!')
+        $extensionConfiguration = ExtensionConfiguration::create(BuilderExtension::ALIAS, ['name' => 'LegacyField']);
+        $field = FieldConfiguration::create('field0', 'String!')
                     ->addExtension($extensionConfiguration);
 
-        $object = ObjectConfiguration::get('MyType')
+        $object = ObjectConfiguration::create('MyType')
                     ->addField($field);
 
         $configuration = new Configuration();
@@ -133,12 +133,12 @@ class BuilderExtensionLegacyTest extends TestCase
     public function testLegacyArgsBuilder(): void
     {
         $extension = $this->getExtension();
-        $extensionConfiguration = ExtensionConfiguration::get(BuilderExtension::ALIAS, ['name' => 'LegacyArgs']);
-        $field = FieldConfiguration::get('field0', 'String!')
-                    ->addArgument(ArgumentConfiguration::get('arg0', 'String'))
+        $extensionConfiguration = ExtensionConfiguration::create(BuilderExtension::ALIAS, ['name' => 'LegacyArgs']);
+        $field = FieldConfiguration::create('field0', 'String!')
+                    ->addArgument(ArgumentConfiguration::create('arg0', 'String'))
                     ->addExtension($extensionConfiguration);
 
-        $object = ObjectConfiguration::get('MyType')
+        $object = ObjectConfiguration::create('MyType')
                     ->addField($field);
 
         $configuration = new Configuration();

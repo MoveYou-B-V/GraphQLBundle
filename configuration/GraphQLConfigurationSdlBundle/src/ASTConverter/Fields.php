@@ -27,11 +27,12 @@ class Fields
         $list = [];
         $parameters = self::TYPES[$type];
         $property = $parameters['property'];
+        /** @var ArgumentConfiguration|FieldConfiguration|InputFieldConfiguration $class */
         $class = $parameters['class'];
 
         if (!empty($node->$property)) {
             foreach ($node->$property as $definition) {
-                $configuration = $class::get($definition->name->value, Type::get($definition))
+                $configuration = $class::create($definition->name->value, Type::get($definition))
                     ->setDescription(Description::get($definition))
                     ->addExtensions(Extensions::get($definition));
 

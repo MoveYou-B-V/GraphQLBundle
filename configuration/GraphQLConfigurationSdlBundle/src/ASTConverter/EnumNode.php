@@ -13,12 +13,12 @@ class EnumNode implements NodeInterface
 {
     public static function toConfiguration(string $name, Node $node): TypeConfiguration
     {
-        $enumConfiguration = EnumConfiguration::get($name)
+        $enumConfiguration = EnumConfiguration::create($name)
             ->setDescription(Description::get($node))
             ->addExtensions(Extensions::get($node));
 
         foreach ($node->values as $value) {
-            $valueConfiguration = EnumValueConfiguration::get($value->name->value, $value->name->value)
+            $valueConfiguration = EnumValueConfiguration::create($value->name->value, $value->name->value)
                 ->setDescription(Description::get($value))
                 ->setDeprecationReason(Deprecated::get($value))
                 ->addExtensions(Extensions::get($value));

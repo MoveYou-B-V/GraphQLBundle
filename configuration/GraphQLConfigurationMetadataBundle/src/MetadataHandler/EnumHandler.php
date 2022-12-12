@@ -39,7 +39,7 @@ class EnumHandler extends MetadataHandler
         $gqlName = $this->getEnumName($reflectionClass, $enumMetadata);
         $metadatas = $this->getMetadatas($reflectionClass);
 
-        $enumConfiguration = EnumConfiguration::get($gqlName)
+        $enumConfiguration = EnumConfiguration::create($gqlName)
             ->setDescription($this->getDescription($metadatas))
             ->addExtensions($this->getExtensions($metadatas))
             ->setOrigin($this->getOrigin($reflectionClass));
@@ -52,7 +52,7 @@ class EnumHandler extends MetadataHandler
             $reflectionConstant = new ReflectionClassConstant($reflectionClass->getName(), $name);
             $valueMetadatas = $this->getMetadatas($reflectionConstant);
 
-            $enumValueConfig = EnumValueConfiguration::get($name, $value)
+            $enumValueConfig = EnumValueConfiguration::create($name, $value)
                 ->setDescription($this->getDescription($valueMetadatas))
                 ->setDeprecationReason($this->getDeprecation($valueMetadatas))
                 ->addExtensions($this->getExtensions($valueMetadatas))

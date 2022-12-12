@@ -20,7 +20,7 @@ class ArgumentConfiguration extends TypeConfiguration
         $this->type = $type;
     }
 
-    public static function get(string $name, string $type = null): ArgumentConfiguration
+    public static function create(string $name, string $type = null): ArgumentConfiguration
     {
         return new static($name, $type);
     }

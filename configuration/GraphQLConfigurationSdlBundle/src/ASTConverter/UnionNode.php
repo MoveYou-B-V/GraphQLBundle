@@ -12,7 +12,7 @@ class UnionNode implements NodeInterface
 {
     public static function toConfiguration(string $name, Node $node): TypeConfiguration
     {
-        $unionConfiguration = UnionConfiguration::get($name)
+        $unionConfiguration = UnionConfiguration::create($name)
             ->setDescription(Description::get($node))
             ->addExtensions(Extensions::get($node));
 

@@ -17,7 +17,7 @@ class UnionConfiguration extends RootTypeConfiguration
         $this->name = $name;
     }
 
-    public static function get(string $name): UnionConfiguration
+    public static function create(string $name): UnionConfiguration
     {
         return new static($name);
     }

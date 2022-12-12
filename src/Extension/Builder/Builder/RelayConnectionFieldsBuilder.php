@@ -44,13 +44,13 @@ class RelayConnectionFieldsBuilder implements BuilderInterface
      */
     public function updateConfiguration(TypeConfiguration $typeConfiguration, $builderConfiguration, Configuration $builderConfigurationuration): void
     {
-        $edges = FieldConfiguration::get('edges', sprintf('[%s]', $builderConfiguration['edgeType']))
+        $edges = FieldConfiguration::create('edges', sprintf('[%s]', $builderConfiguration['edgeType']))
             ->setDescription($builderConfiguration['edgeDescription']);
 
-        $pageInfo = FieldConfiguration::get('pageInfo', $builderConfiguration['pageInfoType'])
+        $pageInfo = FieldConfiguration::create('pageInfo', $builderConfiguration['pageInfoType'])
             ->setDescription($builderConfiguration['pageInfoDescription']);
 
-        $totalCount = FieldConfiguration::get('totalCount', 'Int')
+        $totalCount = FieldConfiguration::create('totalCount', 'Int')
             ->setDescription($builderConfiguration['totalCountDescription']);
 
         $typeConfiguration->addFields([$edges, $pageInfo, $totalCount]);

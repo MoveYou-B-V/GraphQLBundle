@@ -17,7 +17,7 @@ class InterfaceConfiguration extends RootTypeConfiguration
         $this->name = $name;
     }
 
-    public static function get(string $name): InterfaceConfiguration
+    public static function create(string $name): InterfaceConfiguration
     {
         return new static($name);
     }

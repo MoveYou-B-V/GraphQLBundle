@@ -23,7 +23,7 @@ class InputFieldConfiguration extends TypeConfiguration
         }
     }
 
-    public static function get(string $name, string $type = null, $defaultValue = null): InputFieldConfiguration
+    public static function create(string $name, string $type = null, $defaultValue = null): InputFieldConfiguration
     {
         if (func_num_args() > 2) {
             return new static($name, $type, $defaultValue);

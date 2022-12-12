@@ -21,7 +21,7 @@ class ObjectConfiguration extends RootTypeConfiguration
         $this->name = $name;
     }
 
-    public static function get(string $name): ObjectConfiguration
+    public static function create(string $name): ObjectConfiguration
     {
         return new static($name);
     }

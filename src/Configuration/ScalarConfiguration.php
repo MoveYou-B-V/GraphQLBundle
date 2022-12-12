@@ -17,7 +17,7 @@ class ScalarConfiguration extends RootTypeConfiguration
         $this->name = $name;
     }
 
-    public static function get(string $name): ScalarConfiguration
+    public static function create(string $name): ScalarConfiguration
     {
         return new static($name);
     }

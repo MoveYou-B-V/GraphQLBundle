@@ -31,7 +31,7 @@ class FieldConfiguration extends TypeConfiguration
         $this->resolve = $resolve;
     }
 
-    public static function get(string $name, string $type = null, string $resolve = null): FieldConfiguration
+    public static function create(string $name, string $type = null, string $resolve = null): FieldConfiguration
     {
         return new static($name, $type, $resolve);
     }

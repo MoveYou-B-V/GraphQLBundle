@@ -13,7 +13,7 @@ class CustomScalarNode implements NodeInterface
 {
     public static function toConfiguration(string $name, Node $node): TypeConfiguration
     {
-        $scalarConfiguration = ScalarConfiguration::get($name)
+        $scalarConfiguration = ScalarConfiguration::create($name)
             ->setDescription(Description::get($node))
             ->addExtensions(Extensions::get($node));
 
