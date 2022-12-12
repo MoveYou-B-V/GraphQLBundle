@@ -7,8 +7,6 @@ namespace Overblog\GraphQLBundle\Definition\Type;
 use Exception;
 use GraphQL\Error\Error;
 use GraphQL\Error\SerializationError;
-use GraphQL\Language\AST\EnumTypeDefinitionNode;
-use GraphQL\Language\AST\EnumTypeExtensionNode;
 use GraphQL\Language\AST\EnumValueNode;
 use GraphQL\Language\AST\Node;
 use GraphQL\Type\Definition\EnumType;
@@ -53,16 +51,22 @@ class PhpEnumType extends EnumType
         }
 
         parent::__construct($config);
+
         if ($this->enumClass) {
             $configValues = $this->config['values'] ?? [];
             if (is_callable($configValues)) {
                 $configValues = $configValues();
             }
-            $reflection = new ReflectionEnum($this->enumClass);
 
+            try {
+                $cases = (new ReflectionEnum($this->enumClass))->getCases();
+            } catch (\Exception $e) {
+                throw new Error(sprintf('Cannot get cases of enum of class %s: %s', $this->enumClass, $e->getMessage()));
+            }
             $enumDefinitions = [];
-            foreach ($reflection->getCases() as $case) {
-                $enumDefinitions[$case->getName()] = ['value' => $case->getName()];
+            foreach ($cases as $case) {
+                $caseName = $case->getName();
+                $enumDefinitions[$caseName] = ['value' => $caseName];
             }
 
             foreach ($configValues as $name => $configValue) {

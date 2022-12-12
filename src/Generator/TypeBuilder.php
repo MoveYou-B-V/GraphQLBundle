@@ -369,7 +369,7 @@ final class TypeBuilder
                 $configLoader->addItem('enumClass', $enumClass);
             }
             if (!empty($config->getValues())) {
-                $values = array_map(fn (EnumValueConfiguration $conf) => $conf->toArray(), $config->getValues(true));
+                $values = array_map(static fn (EnumValueConfiguration $conf): array => $conf->toArray(), $config->getValues(true));
                 $configLoader->addItem('values', Collection::assoc($values));
             }
         }
@@ -743,8 +743,11 @@ final class TypeBuilder
             return $this->buildType($c->type);
         }*/
 
-        $field = Collection::assoc()
-            ->addItem('type', $this->buildType($fieldConfig->getType()));
+        $field = Collection::assoc();
+
+        if (method_exists($fieldConfig, 'getType')) {
+            $field->addItem('type', $this->buildType($fieldConfig->getType()));
+        }
 
         if ($fieldConfig->hasDescription()) {
             $field->addItem('description', $fieldConfig->getDescription());
