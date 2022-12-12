@@ -11,7 +11,6 @@ use Overblog\GraphQLBundle\DependencyInjection\Compiler\MutationTaggedServiceMap
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\QueryTaggedServiceMappingPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\ResolverMapTaggedServiceMappingPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\ResolverMethodAliasesPass;
-use Overblog\GraphQLBundle\DependencyInjection\Compiler\TypeGeneratorPass;
 use Overblog\GraphQLBundle\DependencyInjection\Compiler\TypeTaggedServiceMappingPass;
 use Overblog\GraphQLBundle\DependencyInjection\OverblogGraphQLExtension;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
@@ -41,7 +40,6 @@ final class OverblogGraphQLBundle extends Bundle
         $container->addCompilerPass(new ResolverMethodAliasesPass());
         $container->addCompilerPass(new AliasedPass());
         $container->addCompilerPass(new ResolverMapTaggedServiceMappingPass());
-        $container->addCompilerPass(new TypeGeneratorPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new TypeTaggedServiceMappingPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new QueryTaggedServiceMappingPass(), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new MutationTaggedServiceMappingTaggedPass(), PassConfig::TYPE_BEFORE_REMOVING);
