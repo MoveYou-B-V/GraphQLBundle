@@ -33,7 +33,7 @@ class ConfigurationMetadataParser extends ConfigurationFilesParser
         $this->metadataReader = $metadataReader;
         $this->classesTypesMap = $classesTypesMap;
 
-        $this->resolvers = iterator_to_array($resolvers);
+        $this->resolvers = $resolvers instanceof \Traversable ? iterator_to_array($resolvers) : $resolvers;
     }
 
     public function getSupportedExtensions(): array

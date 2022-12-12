@@ -17,7 +17,6 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\TypeGuessingException;
 use Overblog\GraphQLBundle\Configuration\TypeConfiguration;
 use ReflectionClass;
-use ReflectionMethod;
 use ReflectionProperty;
 use Reflector;
 
@@ -58,7 +57,7 @@ final class DoctrineTypeGuesserExtension extends TypeGuesserExtension
     public function guessType(ReflectionClass $reflectionClass, Reflector $reflector, array $filterGraphQLTypes = []): ?string
     {
         if (!class_exists(Column::class)) {
-            throw new TypeGuessingException(sprintf('You must install doctrine/orm package to use this type guesser.'));
+            throw new TypeGuessingException('You must install doctrine/orm package to use this type guesser.');
         }
 
         if (!$reflector instanceof ReflectionProperty) {
@@ -79,9 +78,9 @@ final class DoctrineTypeGuesserExtension extends TypeGuesserExtension
             $type = $this->resolveTypeFromDoctrineType($doctrineType);
             if ($type) {
                 return $nullable ? $type : sprintf('%s!', $type);
-            } else {
-                throw new TypeGuessingException(sprintf('Unable to auto-guess GraphQL type from Doctrine type "%s"', $columnAnnotation->type));
             }
+
+            throw new TypeGuessingException(sprintf('Unable to auto-guess GraphQL type from Doctrine type "%s"', $columnAnnotation->type));
         }
 
         $associationAnnotations = [
@@ -102,22 +101,23 @@ final class DoctrineTypeGuesserExtension extends TypeGuesserExtension
                     $isMultiple = $associationAnnotations[$associationAnnotation::class];
                     if ($isMultiple) {
                         return sprintf('[%s!]', $type);
-                    } else {
-                        $isNullable = true;
-                        /** @var JoinColumn|null $joinColumn */
-                        $joinColumn = $this->getMetadata($reflector, JoinColumn::class);
-                        if (null !== $joinColumn) {
-                            $isNullable = $joinColumn->nullable;
-                        }
-
-                        return sprintf('%s%s', $type, $isNullable ? '' : '!');
                     }
-                } else {
-                    throw new TypeGuessingException(sprintf('Unable to auto-guess GraphQL type from Doctrine target class "%s" (check if the target class is a GraphQL type itself (with a @Metadata\Type metadata).', $target));
+
+                    $isNullable = true;
+                    /** @var JoinColumn|null $joinColumn */
+                    $joinColumn = $this->getMetadata($reflector, JoinColumn::class);
+                    if (null !== $joinColumn) {
+                        $isNullable = $joinColumn->nullable;
+                    }
+
+                    return sprintf('%s%s', $type, $isNullable ? '' : '!');
                 }
+
+                throw new TypeGuessingException(sprintf('Unable to auto-guess GraphQL type from Doctrine target class "%s" (check if the target class is a GraphQL type itself (with a @Metadata\Type metadata)).', $target));
             }
         }
-        throw new TypeGuessingException(sprintf('No Doctrine ORM annotation found.'));
+
+        throw new TypeGuessingException('No Doctrine ORM annotation found.');
     }
 
     private function getMetadata(Reflector $reflector, string $annotationClass): ?MappingAnnotation
@@ -168,9 +168,9 @@ final class DoctrineTypeGuesserExtension extends TypeGuesserExtension
 
         if (is_array($typeMapping)) {
             return $typeMapping[$nullable ? 0 : 1];
-        } else {
-            return sprintf('%s%s', $typeMapping, $nullable ? '' : '!');
         }
+
+        return sprintf('%s%s', $typeMapping, $nullable ? '' : '!');
     }
 
     /**
