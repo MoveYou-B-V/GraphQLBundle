@@ -15,6 +15,7 @@ class Configuration
 
     public const DUPLICATE_STRATEGY_FORBIDDEN = 'forbidden';
     public const DUPLICATE_STRATEGY_OVERRIDE_SAME_TYPE = 'override_same_type';
+    // FIXME: not used constant
     public const DUPLICATE_STRATEGY_OVERRIDE_ALL = 'override';
 
     protected string $duplicateStrategy = self::DUPLICATE_STRATEGY_FORBIDDEN;
