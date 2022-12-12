@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Overblog\GraphQLBundle\Configuration;
 
 use RuntimeException;
-use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 
 final class ConfigurationException extends RuntimeException
@@ -31,10 +31,10 @@ final class ConfigurationException extends RuntimeException
         $this->updateMessage();
     }
 
-    public function addViolation(ConstraintViolation $violation): void
+    public function addViolation(ConstraintViolationInterface $violation): void
     {
         if ($violation->getInvalidValue() instanceof TypeConfiguration) {
-            $this->addError($violation->getInvalidValue(), $violation->getMessage());
+            $this->addError($violation->getInvalidValue(), (string) $violation->getMessage());
         }
     }
 
@@ -45,7 +45,7 @@ final class ConfigurationException extends RuntimeException
         }
     }
 
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return count($this->errors) > 0;
     }

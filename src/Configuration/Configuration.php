@@ -33,8 +33,6 @@ class Configuration
     }
 
     /**
-     * @param string[] $gqlTypes
-     *
      * @return RootTypeConfiguration[]
      */
     public function getTypes(string ...$gqlTypes): array
@@ -209,7 +207,7 @@ class Configuration
     }
 
     /**
-     * @param ObjectConfiguration|InterfaceConfiguration|InputConfiguration|FieldConfiguration|InputFieldConfiguration|ArgumentConfiguration|null $type
+     * @param ObjectConfiguration|InterfaceConfiguration|InputConfiguration|FieldConfiguration|InputFieldConfiguration|ArgumentConfiguration|TypeConfiguration|null $type
      */
     protected function createViolation(ExecutionContextInterface $context, string $message, TypeConfiguration $type = null): void
     {
@@ -236,6 +234,7 @@ class Configuration
 
     protected function createDuplicationViolation(ExecutionContextInterface $context, string $name, array $items, TypeConfiguration $type = null): void
     {
+        $typeLabel = null;
         switch (true) {
             case null === $type:
                 $typeLabel = 'types';
@@ -255,11 +254,11 @@ class Configuration
             'Naming collision on name "%s", found %s %s using it.',
             $name,
             count($items),
-            $typeLabel
+            $typeLabel ?? $type::class
         );
         if (null === $type) {
             $message .= "\n".implode("\n", array_map(
-                fn (TypeConfiguration $type) => sprintf('  - GraphQL %s %s', $type->getGraphQLType(), json_encode($type->getOrigin())),
+                static fn (TypeConfiguration $type): string => sprintf('  - GraphQL %s %s', $type->getGraphQLType(), json_encode($type->getOrigin(), JSON_THROW_ON_ERROR)),
                 $items
             ));
         }
