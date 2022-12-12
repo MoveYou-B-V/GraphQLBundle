@@ -45,7 +45,7 @@ class EnumHandler extends MetadataHandler
             ->setOrigin($this->getOrigin($reflectionClass));
 
         // Annotation @EnumValue handling
-        $enumValues = array_merge($this->getMetadataMatching($metadatas, Metadata\EnumValue::class), $enumMetadata->values);
+        $enumValues = $this->getMetadataMatching($metadatas, Metadata\EnumValue::class);
 
         foreach ($reflectionClass->getConstants() as $name => $value) {
             $reflectionConstant = new ReflectionClassConstant($reflectionClass->getName(), $name);
