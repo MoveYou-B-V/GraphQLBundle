@@ -18,6 +18,7 @@ use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Transformer\ArgumentsTransformer;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Transformer\InvalidArgumentError;
 use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Transformer\InvalidArgumentsError;
+use Overblog\GraphQLBundle\Tests\Functional\EnumPhp\EnumPhp;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -124,9 +125,9 @@ final class ArgumentsTransformerTest extends TestCase
         $res = $transformer->getInstanceAndValidate('InputType1', $data, $info, 'input1');
 
         $this->assertInstanceOf(InputType1::class, $res);
-        $this->assertEquals($res->field1, $data['field1']);
-        $this->assertEquals($res->field2, $data['field2']);
-        $this->assertEquals($res->field3, $data['field3']);
+        $this->assertEquals($data['field1'], $res->field1);
+        $this->assertEquals($data['field2'], $res->field2);
+        $this->assertEquals($data['field3'], $res->field3);
 
         $data = [
             'field1' => [
@@ -139,7 +140,7 @@ final class ArgumentsTransformerTest extends TestCase
         $res = $transformer->getInstanceAndValidate('InputType2', $data, $info, 'input2');
 
         $this->assertInstanceOf(InputType2::class, $res);
-        $this->assertTrue(is_array($res->field1));
+        $this->assertIsArray($res->field1);
         $this->assertArrayHasKey(0, $res->field1);
         $this->assertArrayHasKey(1, $res->field1);
         $this->assertInstanceOf(InputType1::class, $res->field1[0]);
@@ -185,7 +186,7 @@ final class ArgumentsTransformerTest extends TestCase
         if (PHP_VERSION_ID >= 80100) {
             $res = $transformer->getInstanceAndValidate('EnumPhp', EnumPhp::VALUE2, $info, 'enumPhp');
             $this->assertInstanceOf(EnumPhp::class, $res);
-            $this->assertEquals($res, EnumPhp::VALUE2);
+            $this->assertEquals(EnumPhp::VALUE2, $res);
         }
 
         $mapping = ['input1' => 'InputType1', 'input2' => 'InputType2', 'enum1' => 'Enum1', 'int1' => 'Int!', 'string1' => 'String!'];
@@ -201,9 +202,9 @@ final class ArgumentsTransformerTest extends TestCase
         $this->assertInstanceOf(InputType1::class, $res[0]);
         $this->assertInstanceOf(InputType2::class, $res[1]);
         $this->assertInstanceOf(Enum1::class, $res[2]);
-        $this->assertEquals(2, count($res[1]->field1));
+        $this->assertCount(2, $res[1]->field1);
         $this->assertIsInt($res[3]);
-        $this->assertEquals($res[4], 'test_string');
+        $this->assertEquals('test_string', $res[4]);
 
         $data = [];
         $res = $transformer->getInstanceAndValidate('InputType1', $data, $info, 'input1');
@@ -229,14 +230,14 @@ final class ArgumentsTransformerTest extends TestCase
         ];
 
         try {
-            $res = $builder->getArguments($mapping, $data, $this->getResolveInfo(self::getTypes()));
-            $this->fail("When input data validation fail, it should raise an Overblog\GraphQLBundle\Error\InvalidArgumentsError exception");
+            $builder->getArguments($mapping, $data, $this->getResolveInfo(self::getTypes()));
+            $this->fail('When input data validation fail, it should raise an Overblog\GraphQLBundle\Error\InvalidArgumentsError exception');
         } catch (Exception $e) {
             $this->assertInstanceOf(InvalidArgumentsError::class, $e);
             $first = $e->getErrors()[0];
             $this->assertInstanceOf(InvalidArgumentError::class, $first);
-            $this->assertEquals($first->getErrors()->get(0), $violation);
-            $this->assertEquals($first->getName(), 'input1');
+            $this->assertEquals($violation, $first->getErrors()->get(0));
+            $this->assertEquals('input1', $first->getName());
 
             $expected = [
                 'input1' => [[
@@ -251,7 +252,7 @@ final class ArgumentsTransformerTest extends TestCase
                 ]],
             ];
 
-            $this->assertEquals($e->toState(), $expected);
+            $this->assertEquals($expected, $e->toState());
         }
     }
 
@@ -299,13 +300,12 @@ final class ArgumentsTransformerTest extends TestCase
         } catch (Exception $e) {
             $this->assertInstanceOf(InvalidArgumentsError::class, $e);
             /** @var InvalidArgumentsError $e */
-            $first = $e->getErrors()[0];
-            $second = $e->getErrors()[1];
+            [$first, $second] = $e->getErrors();
             $this->assertInstanceOf(InvalidArgumentError::class, $first);
-            $this->assertEquals($first->getErrors()->get(0), $violation1);
-            $this->assertEquals($first->getName(), 'input1');
-            $this->assertEquals($second->getErrors()->get(0), $violation2);
-            $this->assertEquals($second->getName(), 'input2');
+            $this->assertEquals($violation1, $first->getErrors()->get(0));
+            $this->assertEquals('input1', $first->getName());
+            $this->assertEquals($violation2, $second->getErrors()->get(0));
+            $this->assertEquals('input2', $second->getName());
 
             $expected = [
                 'input1' => [
@@ -359,9 +359,9 @@ final class ArgumentsTransformerTest extends TestCase
 
         /** @var InputType1 $inputValue */
         $this->assertInstanceOf(InputType1::class, $inputValue);
-        $this->assertEquals($inputValue->field1, $data['field1']);
-        $this->assertEquals($inputValue->field2, $data['field2']);
-        $this->assertEquals($inputValue->field3, $data['field3']);
+        $this->assertEquals($data['field1'], $inputValue->field1);
+        $this->assertEquals($data['field2'], $inputValue->field2);
+        $this->assertEquals($data['field3'], $inputValue->field3);
     }
 
     public function getWrappedInputObjectList(): Generator
@@ -396,8 +396,8 @@ final class ArgumentsTransformerTest extends TestCase
 
         /** @var InputType1 $inputValue */
         $this->assertInstanceOf(InputType1::class, $inputValue);
-        $this->assertEquals($inputValue->field1, $data['field1']);
-        $this->assertEquals($inputValue->field2, $data['field2']);
-        $this->assertEquals($inputValue->field3, $data['field3']);
+        $this->assertEquals($data['field1'], $inputValue->field1);
+        $this->assertEquals($data['field2'], $inputValue->field2);
+        $this->assertEquals($data['field3'], $inputValue->field3);
     }
 }
