@@ -21,7 +21,7 @@ class FieldConfiguration extends TypeConfiguration
      * @Assert\Valid
      */
     protected array $arguments = [];
-    protected $resolve = null;
+    protected $resolve;
     protected ?string $complexity = null;
 
     public function __construct(string $name, string $type = null, string $resolve = null)
@@ -79,7 +79,9 @@ class FieldConfiguration extends TypeConfiguration
         return $this;
     }
 
-    /** @return ArgumentConfiguration[] */
+    /**
+     * @return ArgumentConfiguration[]
+     */
     public function getArguments(bool $indexedByName = false): array
     {
         if (!$indexedByName) {
@@ -119,9 +121,9 @@ class FieldConfiguration extends TypeConfiguration
     }
 
     /**
-     * @return TypeConfiguration[]
+     * @return ArgumentConfiguration[]
      */
-    public function getChildren()
+    public function getChildren(): array
     {
         return $this->getArguments();
     }
@@ -133,17 +135,15 @@ class FieldConfiguration extends TypeConfiguration
 
     public function toArray(): array
     {
-        $array = array_filter([
+        return array_filter([
             'name' => $this->name,
             'type' => $this->type,
             'description' => $this->description,
             'deprecationReason' => $this->deprecationReason,
             'complexity' => $this->complexity,
             'resolve' => $this->resolve,
-            'arguments' => array_map(fn (ArgumentConfiguration $argument) => $argument->toArray(), $this->arguments),
+            'arguments' => array_map(static fn (ArgumentConfiguration $argument): array => $argument->toArray(), $this->arguments),
             'extensions' => $this->getExtensionsArray(),
         ]);
-
-        return $array;
     }
 }

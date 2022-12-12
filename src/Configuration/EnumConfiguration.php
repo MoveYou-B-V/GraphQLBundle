@@ -74,9 +74,9 @@ class EnumConfiguration extends RootTypeConfiguration
     }
 
     /**
-     * @return TypeConfiguration[]
+     * @return EnumValueConfiguration[]
      */
-    public function getChildren()
+    public function getChildren(): array
     {
         return $this->getValues();
     }

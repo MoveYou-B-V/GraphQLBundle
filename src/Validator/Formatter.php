@@ -30,8 +30,7 @@ final class Formatter
                 ];
             }
 
-            $formattedError = $event->getFormattedError();
-            $formattedError['extensions']['validation'] = $validation;
+            $event->getFormattedError()['extensions']['validation'] = $validation;
         }
     }
 }

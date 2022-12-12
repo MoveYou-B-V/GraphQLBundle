@@ -19,7 +19,6 @@ abstract class Extension
      */
     public function handleConfiguration(Configuration $configuration, TypeConfiguration $typeConfiguration, $extensionConfiguration): void
     {
-        return;
     }
 
     /**

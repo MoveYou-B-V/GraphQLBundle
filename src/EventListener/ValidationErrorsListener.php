@@ -12,10 +12,8 @@ final class ValidationErrorsListener
     public function onErrorFormatting(ErrorFormattingEvent $event): void
     {
         $previous = $event->getError()->getPrevious();
-
-        if ($previous && $previous instanceof InvalidArgumentsError) {
-            $formattedError = $event->getFormattedError();
-            $formattedError['state'] = $previous->toState();
+        if ($previous instanceof InvalidArgumentsError) {
+            $event->getFormattedError()['state'] = $previous->toState();
         }
     }
 }

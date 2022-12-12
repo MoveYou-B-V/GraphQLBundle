@@ -58,7 +58,7 @@ abstract class TypeConfiguration
     /**
      * @return TypeConfiguration[]
      */
-    public function getChildren()
+    public function getChildren(): array
     {
         return [];
     }

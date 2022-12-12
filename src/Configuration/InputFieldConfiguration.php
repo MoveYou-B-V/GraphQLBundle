@@ -27,9 +27,9 @@ class InputFieldConfiguration extends TypeConfiguration
     {
         if (func_num_args() > 2) {
             return new static($name, $type, $defaultValue);
-        } else {
-            return new static($name, $type);
         }
+
+        return new static($name, $type);
     }
 
     public function getGraphQLType(): string

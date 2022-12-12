@@ -71,9 +71,9 @@ trait FieldsTrait
     }
 
     /**
-     * @return TypeConfiguration[]
+     * @return FieldConfiguration[]
      */
-    public function getChildren()
+    public function getChildren(): array
     {
         return $this->getFields();
     }

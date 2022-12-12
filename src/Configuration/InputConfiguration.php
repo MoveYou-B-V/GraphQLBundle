@@ -83,9 +83,9 @@ class InputConfiguration extends RootTypeConfiguration
     }
 
     /**
-     * @return TypeConfiguration[]
+     * @return InputFieldConfiguration[]
      */
-    public function getChildren()
+    public function getChildren(): array
     {
         return $this->getFields();
     }

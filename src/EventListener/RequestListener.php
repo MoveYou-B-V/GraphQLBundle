@@ -25,7 +25,6 @@ final class RequestListener
             return;
         }
 
-        $context = $event->getExecutorContext();
-        $context['request'] = $request;
+        $event->getExecutorContext()['request'] = $request;
     }
 }
