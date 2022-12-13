@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests;
+namespace Overblog\GraphQLConfigurationMetadataBundle\Tests;
 
 use ArrayIterator;
 use Exception;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ClassesTypesMap;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\ConfigurationMetadataParser;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Metadata;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataConfigurationException;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler\EnumHandler;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler\InputHandler;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler\InterfaceHandler;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler\ObjectHandler;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler\RelayConnectionHandler;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler\RelayEdgeHandler;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler\ScalarHandler;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\MetadataHandler\UnionHandler;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Reader\MetadataReaderInterface;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\Extension\DocBlockTypeGuesserExtension;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\Extension\DoctrineTypeGuesserExtension;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\Extension\TypeHintTypeGuesserExtension;
-use Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\TypeGuesser\TypeGuesser;
+use Overblog\GraphQLConfigurationMetadataBundle\ClassesTypesMap;
+use Overblog\GraphQLConfigurationMetadataBundle\ConfigurationMetadataParser;
+use Overblog\GraphQLConfigurationMetadataBundle\Metadata;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataConfigurationException;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataHandler\EnumHandler;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataHandler\InputHandler;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataHandler\InterfaceHandler;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataHandler\ObjectHandler;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataHandler\RelayConnectionHandler;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataHandler\RelayEdgeHandler;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataHandler\ScalarHandler;
+use Overblog\GraphQLConfigurationMetadataBundle\MetadataHandler\UnionHandler;
+use Overblog\GraphQLConfigurationMetadataBundle\Reader\MetadataReaderInterface;
+use Overblog\GraphQLConfigurationMetadataBundle\TypeGuesser\Extension\DocBlockTypeGuesserExtension;
+use Overblog\GraphQLConfigurationMetadataBundle\TypeGuesser\Extension\DoctrineTypeGuesserExtension;
+use Overblog\GraphQLConfigurationMetadataBundle\TypeGuesser\Extension\TypeHintTypeGuesserExtension;
+use Overblog\GraphQLConfigurationMetadataBundle\TypeGuesser\TypeGuesser;
 use Overblog\GraphQLBundle\Configuration\Configuration;
 use Overblog\GraphQLBundle\Configuration\EnumConfiguration;
 use Overblog\GraphQLBundle\Configuration\InputConfiguration;
@@ -436,9 +436,9 @@ abstract class ConfigurationMetadataTest extends WebTestCase
         $scalar = $this->getType('GalaxyCoordinates', ScalarConfiguration::class);
         $this->assertEquals([
             'name' => 'GalaxyCoordinates',
-            'serialize' => 'Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Scalar\GalaxyCoordinates::serialize',
-            'parseValue' => 'Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Scalar\GalaxyCoordinates::parseValue',
-            'parseLiteral' => 'Overblog\GraphQL\Bundle\ConfigurationMetadataBundle\Tests\fixtures\Scalar\GalaxyCoordinates::parseLiteral',
+            'serialize' => 'Overblog\GraphQLConfigurationMetadataBundle\Tests\fixtures\Scalar\GalaxyCoordinates::serialize',
+            'parseValue' => 'Overblog\GraphQLConfigurationMetadataBundle\Tests\fixtures\Scalar\GalaxyCoordinates::parseValue',
+            'parseLiteral' => 'Overblog\GraphQLConfigurationMetadataBundle\Tests\fixtures\Scalar\GalaxyCoordinates::parseLiteral',
             'description' => 'The galaxy coordinates scalar',
         ], $scalar->toArray());
 
