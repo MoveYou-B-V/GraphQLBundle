@@ -1,0 +1,25 @@
+services:
+    # GraphQL build-in type definitions
+    Overblog\GraphQLBundle\Config\ObjectTypeDefinition:
+        tags:
+            - { name: overblog_graphql.type_definition, alias: object }
+
+    Overblog\GraphQLBundle\Config\EnumTypeDefinition:
+        tags:
+            - { name: overblog_graphql.type_definition, alias: enum }
+
+    Overblog\GraphQLBundle\Config\InterfaceTypeDefinition:
+        tags:
+            - { name: overblog_graphql.type_definition, alias: interface }
+
+    Overblog\GraphQLBundle\Config\UnionTypeDefinition:
+        tags:
+            - { name: overblog_graphql.type_definition, alias: union }
+
+    Overblog\GraphQLBundle\Config\InputObjectTypeDefinition:
+        tags:
+            - { name: overblog_graphql.type_definition, alias: input-object }
+
+    Overblog\GraphQLBundle\Config\CustomScalarTypeDefinition:
+        tags:
+            - { name: overblog_graphql.type_definition, alias: custom-scalar }
