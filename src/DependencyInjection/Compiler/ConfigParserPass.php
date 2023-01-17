@@ -72,13 +72,28 @@ class ConfigParserPass implements CompilerPassInterface
 
     public function process(ContainerBuilder $container): void
     {
-        $config = $this->processConfiguration([$this->getConfigs($container)]);
+        $config = $this->processConfiguration(
+            $this->getTypeDefinitions($container),
+            [$this->getConfigs($container)]
+        );
         $container->setParameter($this->getAlias().'.config', $config);
     }
 
-    public function processConfiguration(array $configs): array
+    public function processConfiguration(array $typeDefinitions, array $configs): array
     {
-        return (new Processor())->processConfiguration(new TypesConfiguration(), $configs);
+        return (new Processor())->processConfiguration(new TypesConfiguration($typeDefinitions), $configs);
+    }
+
+    private function getTypeDefinitions(ContainerBuilder $container): array
+    {
+        $taggedTypeDefinitions = $container->findTaggedServiceIds('overblog_graphql.type_definition', true);
+
+        $typeDefinitions = [];
+        foreach ($taggedTypeDefinitions as $typeDefinition => $config) {
+            $typeDefinitions[$typeDefinition] = $config[0]['alias'];
+        }
+
+        return $typeDefinitions;
     }
 
     private function getConfigs(ContainerBuilder $container): array

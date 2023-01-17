@@ -6,6 +6,7 @@ namespace Overblog\GraphQLBundle\DependencyInjection;
 
 use Overblog\GraphQLBundle\Config;
 use Overblog\GraphQLBundle\Config\Processor\InheritanceProcessor;
+use Overblog\GraphQLBundle\Config\TypeDefinition;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -21,14 +22,15 @@ use function str_replace;
 
 class TypesConfiguration implements ConfigurationInterface
 {
-    private static array $types = [
-        'object',
-        'enum',
-        'interface',
-        'union',
-        'input-object',
-        'custom-scalar',
-    ];
+    /**
+     * @var array<TypeDefinition, string>
+     */
+    private array $types;
+
+    public function __construct(array $types)
+    {
+        $this->types = $types;
+    }
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -37,7 +39,7 @@ class TypesConfiguration implements ConfigurationInterface
         /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->getRootNode();
 
-        $configTypeKeys = array_map(fn ($type) => $this->normalizedConfigTypeKey($type), self::$types);
+        $configTypeKeys = array_map(fn ($type) => $this->normalizedConfigTypeKey($type), $this->types);
 
         $this->addBeforeNormalization($rootNode);
 
@@ -81,27 +83,6 @@ class TypesConfiguration implements ConfigurationInterface
                     })
                 ->end()
                 ->cannotBeOverwritten()
-                ->children()
-                    ->scalarNode('class_name')
-                        ->isRequired()
-                        ->validate()
-                            ->ifTrue(fn ($name) => !preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name))
-                            ->thenInvalid('A valid class name starts with a letter or underscore, followed by any number of letters, numbers, or underscores.')
-                        ->end()
-                    ->end()
-                    ->enumNode('type')->values(self::$types)->isRequired()->end()
-                    ->arrayNode(InheritanceProcessor::INHERITS_KEY)
-                        ->prototype('scalar')->info('Types to inherit of.')->end()
-                    ->end()
-                    ->booleanNode('decorator')->info('Decorator will not be generated.')->defaultFalse()->end()
-                    ->append(Config\ObjectTypeDefinition::create()->getDefinition())
-                    ->append(Config\EnumTypeDefinition::create()->getDefinition())
-                    ->append(Config\InterfaceTypeDefinition::create()->getDefinition())
-                    ->append(Config\UnionTypeDefinition::create()->getDefinition())
-                    ->append(Config\InputObjectTypeDefinition::create()->getDefinition())
-                    ->append(Config\CustomScalarTypeDefinition::create()->getDefinition())
-                    ->variableNode('config')->end()
-                ->end()
                 // _{TYPE}_config is renamed config
                 ->validate()
                     ->ifTrue(fn ($v) => isset($v[$this->normalizedConfigTypeKey($v['type'])]))
@@ -115,6 +96,8 @@ class TypesConfiguration implements ConfigurationInterface
                 ->end()
 
             ->end();
+
+        $this->registerTypes($rootNode);
 
         return $treeBuilder;
     }
@@ -133,5 +116,33 @@ class TypesConfiguration implements ConfigurationInterface
     private function normalizedConfigTypeKey(string $type): string
     {
         return '_'.str_replace('-', '_', $type).'_config';
+    }
+
+    private function registerTypes(ArrayNodeDefinition $rootNode): void
+    {
+        // There is only one child
+        $key = key($rootNode->getChildNodeDefinitions());
+
+        $rootNode->getChildNodeDefinitions()[$key]
+            ->children()
+                ->scalarNode('class_name')
+                    ->isRequired()
+                    ->validate()
+                    ->ifTrue(fn ($name) => !preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name))
+                    ->thenInvalid('A valid class name starts with a letter or underscore, followed by any number of letters, numbers, or underscores.')
+                ->end()
+            ->end()
+            ->enumNode('type')->values($this->types)->isRequired()->end()
+            ->arrayNode(InheritanceProcessor::INHERITS_KEY)
+                ->prototype('scalar')->info('Types to inherit of.')->end()
+            ->end()
+            ->booleanNode('decorator')->info('Decorator will not be generated.')->defaultFalse()->end();
+
+        foreach ($this->types as $type => $name) {
+            $rootNode->append($type::create()->getDefinition());
+        }
+
+        $rootNode->variableNode('config')->end()
+            ->end();
     }
 }
