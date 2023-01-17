@@ -80,6 +80,7 @@ class OverblogGraphQLExtension extends Extension
         $loader->load('services.yaml');
         $loader->load('commands.yaml');
         $loader->load('listeners.yaml');
+        $loader->load('graphql_type_definitions.yaml');
         $loader->load('graphql_types.yaml');
         $loader->load('graphql_resolvers.yaml');
         $loader->load('expression_language_functions.yaml');
